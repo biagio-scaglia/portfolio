@@ -1078,7 +1078,6 @@ function App() {
         {/* Start Button Windows 7 - Circolare */}
         <div
           className="start-button"
-          role="button"
           tabIndex={0}
           onClick={() => setShowStartMenu(!showStartMenu)}
           onKeyDown={(e) => {
@@ -1948,7 +1947,6 @@ function App() {
       {windowWidth <= 768 && (
         <>
           <div
-            role="button"
             tabIndex={0}
             onClick={() => setShowFloatingMenu(!showFloatingMenu)}
             onKeyDown={(e) => {
@@ -1956,6 +1954,16 @@ function App() {
                 e.preventDefault();
                 setShowFloatingMenu(!showFloatingMenu);
               }
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'scale(1.05)';
+              e.currentTarget.style.boxShadow = '0 0 25px rgba(100, 150, 255, 0.7)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'scale(1)';
+              e.currentTarget.style.boxShadow = showFloatingMenu
+                ? '0 0 30px rgba(100, 150, 255, 0.8), inset 0 2px 4px rgba(0, 0, 0, 0.2)'
+                : '0 4px 20px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.3)';
             }}
             style={{
               position: 'fixed',
@@ -2095,10 +2103,10 @@ function App() {
                   <div style={{
                     flex: 1,
                     overflowY: 'auto',
-                    padding: '16px',
+                    padding: '12px',
                     display: 'grid',
-                    gridTemplateColumns: windowWidth <= 480 ? 'repeat(3, 1fr)' : 'repeat(4, 1fr)',
-                    gap: '12px',
+                    gridTemplateColumns: 'repeat(2, 1fr)',
+                    gap: '8px',
                   }}>
                     {filteredMobileItems.map((item) => {
                       const isActive = item.id === 'desktopStartMenu'
@@ -2106,7 +2114,7 @@ function App() {
                         : isWindowActive(item.id as keyof typeof openWindows);
                       
                       return (
-                        <button
+                        <div
                           key={item.id}
                           onClick={() => {
                             if (item.id === 'desktopStartMenu') {
@@ -2119,23 +2127,24 @@ function App() {
                           }}
                           style={{
                             display: 'flex',
-                            flexDirection: 'column',
+                            flexDirection: 'row',
                             alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '6px',
-                            padding: '12px 6px',
+                            gap: '8px',
+                            padding: '8px 12px',
                             background: isActive
-                              ? 'rgba(255, 255, 255, 0.2)'
+                              ? 'rgba(255, 255, 255, 0.25)'
                               : 'rgba(255, 255, 255, 0.08)',
                             border: isActive
-                              ? '1px solid rgba(255, 255, 255, 0.4)'
-                              : '1px solid rgba(255, 255, 255, 0.1)',
-                            borderRadius: '12px',
+                              ? '1px solid rgba(255, 255, 255, 0.45)'
+                              : '1px solid rgba(255, 255, 255, 0.12)',
+                            borderRadius: '8px',
                             cursor: 'pointer',
-                            transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                            transition: 'all 0.15s ease',
                             outline: 'none',
                             WebkitTapHighlightColor: 'transparent',
-                            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+                            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                            width: '100%',
+                            boxSizing: 'border-box',
                           }}
                           onMouseEnter={(e) => {
                             e.currentTarget.style.background = 'rgba(255, 255, 255, 0.22)'
@@ -2143,34 +2152,38 @@ function App() {
                           }}
                           onMouseLeave={(e) => {
                             e.currentTarget.style.background = isActive
-                              ? 'rgba(255, 255, 255, 0.2)'
+                              ? 'rgba(255, 255, 255, 0.25)'
                               : 'rgba(255, 255, 255, 0.08)'
                             e.currentTarget.style.borderColor = isActive
-                              ? '1px solid rgba(255, 255, 255, 0.4)'
-                              : '1px solid rgba(255, 255, 255, 0.1)'
+                              ? '1px solid rgba(255, 255, 255, 0.45)'
+                              : '1px solid rgba(255, 255, 255, 0.12)'
                           }}
                         >
                           <img 
                             src={item.icon} 
                             alt={item.label} 
                             style={{ 
-                              width: '32px', 
-                              height: '32px', 
+                              width: '24px', 
+                              height: '24px', 
                               objectFit: 'contain',
-                              filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))'
+                              filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.25))',
+                              flexShrink: 0,
                             }} 
                           />
                           <span style={{ 
-                            fontSize: '11px', 
+                            fontSize: '12px', 
                             color: '#ffffff', 
                             fontWeight: isActive ? 'bold' : 'normal',
-                            textAlign: 'center',
-                            wordBreak: 'break-word',
+                            textAlign: 'left',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
                             textShadow: '0 1px 2px rgba(0,0,0,0.4)',
+                            flex: 1,
                           }}>
                             {item.label}
                           </span>
-                        </button>
+                        </div>
                       );
                     })}
                     {filteredMobileItems.length === 0 && (
