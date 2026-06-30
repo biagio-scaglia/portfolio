@@ -282,9 +282,20 @@ export default function MusicWindow({ onClose, onMinimize, icon }: MusicWindowPr
 
         {/* Controlli */}
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '15px' }}>
-          <button
-            onClick={playPrevious}
-            disabled={currentSongIndex === 0}
+          <div
+            role="button"
+            tabIndex={currentSongIndex === 0 ? -1 : 0}
+            onClick={() => {
+              if (currentSongIndex > 0) {
+                playPrevious()
+              }
+            }}
+            onKeyDown={(e) => {
+              if (currentSongIndex > 0 && (e.key === 'Enter' || e.key === ' ')) {
+                e.preventDefault()
+                playPrevious()
+              }
+            }}
             style={{
               width: windowWidth <= 480 ? '40px' : '45px',
               height: windowWidth <= 480 ? '40px' : '45px',
@@ -302,6 +313,8 @@ export default function MusicWindow({ onClose, onMinimize, icon }: MusicWindowPr
               padding: '0',
               margin: '0',
               opacity: currentSongIndex === 0 ? 0.5 : 1,
+              userSelect: 'none',
+              outline: 'none',
             }}
             onMouseEnter={(e) => {
               if (currentSongIndex > 0) {
@@ -315,10 +328,18 @@ export default function MusicWindow({ onClose, onMinimize, icon }: MusicWindowPr
             }}
           >
             <i className="fas fa-step-backward" style={{ marginLeft: '-2px' }}></i>
-          </button>
+          </div>
 
-          <button
+          <div
+            role="button"
+            tabIndex={0}
             onClick={togglePlayPause}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                togglePlayPause()
+              }
+            }}
             style={{
               width: windowWidth <= 480 ? '45px' : '50px',
               height: windowWidth <= 480 ? '45px' : '50px',
@@ -335,6 +356,8 @@ export default function MusicWindow({ onClose, onMinimize, icon }: MusicWindowPr
               margin: '0',
               overflow: 'hidden',
               position: 'relative',
+              userSelect: 'none',
+              outline: 'none',
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.background = 'linear-gradient(to bottom, #ffffff 0%, #e0e0e0 100%)'
@@ -354,11 +377,22 @@ export default function MusicWindow({ onClose, onMinimize, icon }: MusicWindowPr
                 marginLeft: isPlaying ? '0' : '2px',
               }}
             ></i>
-          </button>
+          </div>
 
-          <button
-            onClick={playNext}
-            disabled={currentSongIndex === PLAYLIST.length - 1}
+          <div
+            role="button"
+            tabIndex={currentSongIndex === PLAYLIST.length - 1 ? -1 : 0}
+            onClick={() => {
+              if (currentSongIndex < PLAYLIST.length - 1) {
+                playNext()
+              }
+            }}
+            onKeyDown={(e) => {
+              if (currentSongIndex < PLAYLIST.length - 1 && (e.key === 'Enter' || e.key === ' ')) {
+                e.preventDefault()
+                playNext()
+              }
+            }}
             style={{
               width: windowWidth <= 480 ? '40px' : '45px',
               height: windowWidth <= 480 ? '40px' : '45px',
@@ -376,6 +410,8 @@ export default function MusicWindow({ onClose, onMinimize, icon }: MusicWindowPr
               padding: '0',
               margin: '0',
               opacity: currentSongIndex === PLAYLIST.length - 1 ? 0.5 : 1,
+              userSelect: 'none',
+              outline: 'none',
             }}
             onMouseEnter={(e) => {
               if (currentSongIndex < PLAYLIST.length - 1) {
@@ -389,7 +425,7 @@ export default function MusicWindow({ onClose, onMinimize, icon }: MusicWindowPr
             }}
           >
             <i className="fas fa-step-forward" style={{ marginLeft: '2px' }}></i>
-          </button>
+          </div>
         </div>
 
         {/* Volume */}

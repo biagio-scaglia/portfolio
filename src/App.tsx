@@ -1069,9 +1069,17 @@ function App() {
         }}
       >
         {/* Start Button Windows 7 - Circolare */}
-        <button
+        <div
           className="start-button"
+          role="button"
+          tabIndex={0}
           onClick={() => setShowStartMenu(!showStartMenu)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              setShowStartMenu(!showStartMenu);
+            }
+          }}
           style={{
             padding: '0',
             fontSize: '13px',
@@ -1097,6 +1105,8 @@ function App() {
               : 'inset 0 1px 0 rgba(255, 255, 255, 0.3), inset 0 -1px 0 rgba(0, 0, 0, 0.2)',
             transition: 'all 0.2s',
             position: 'relative',
+            userSelect: 'none',
+            outline: 'none',
           }}
         >
           <img 
@@ -1110,7 +1120,7 @@ function App() {
               filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))'
             }} 
           />
-        </button>
+        </div>
         <div style={{ width: '1px', background: 'rgba(0, 0, 0, 0.4)', height: '70%', margin: '0 3px' }} />
         <button
           className={`taskbar-button ${isWindowActive('about') ? 'is-active' : ''}`}
