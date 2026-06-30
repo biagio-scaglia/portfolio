@@ -271,7 +271,7 @@ export default function Window({
         maxHeight: isMaximized ? 'none' : (windowSize.isMobile ? '85vh' : windowSize.isTablet ? '80vh' : 'none'),
         position: 'absolute',
         left: isMaximized ? '2px' : (windowSize.isMobile ? '2.5vw' : `${position.x}px`),
-        top: isMaximized ? '2px' : (windowSize.isMobile ? '5vh' : `${position.y}px`),
+        top: isMaximized ? '2px' : (windowSize.isMobile ? '12vh' : `${position.y}px`),
         cursor: isDragging ? 'grabbing' : 'default',
         zIndex: isDragging || isResizing ? 1000 : 100,
         touchAction: 'none',

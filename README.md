@@ -264,12 +264,9 @@ Questo progetto è privato. Tutti i diritti riservati.
 
 **Biagio Scaglia**
 
-- 📧 Email: biagio.scaglia01@gmail.com
-- 📱 Telefono: (+39) 3513150134
 - 💼 LinkedIn: [Biagio Scaglia](https://www.linkedin.com/in/biagio-scaglia)
 - 🌐 Portfolio: [biagio-scaglia.github.io/portfolio-cv](https://biagio-scaglia.github.io/portfolio-cv)
 - 🐙 GitHub: [@biagio-scaglia](https://github.com/biagio-scaglia)
-- 📍 Località: Modugno, Bari, Italia
 
 ## 🔑 Keywords
 
