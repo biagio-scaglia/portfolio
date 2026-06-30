@@ -1940,8 +1940,16 @@ function App() {
       {/* Floating Button per Mobile/Tablet */}
       {windowWidth <= 768 && (
         <>
-          <button
+          <div
+            role="button"
+            tabIndex={0}
             onClick={() => setShowFloatingMenu(!showFloatingMenu)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setShowFloatingMenu(!showFloatingMenu);
+              }
+            }}
             style={{
               position: 'fixed',
               bottom: '100px',
@@ -1964,6 +1972,8 @@ function App() {
               justifyContent: 'center',
               zIndex: 10001,
               transition: 'all 0.3s',
+              outline: 'none',
+              WebkitTapHighlightColor: 'transparent',
             }}
           >
             <img 
@@ -1978,7 +1988,7 @@ function App() {
                 transition: 'all 0.3s',
               }} 
             />
-          </button>
+          </div>
           
           {/* Floating Menu */}
           {showFloatingMenu && (

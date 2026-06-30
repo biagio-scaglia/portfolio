@@ -66,7 +66,7 @@ export default function BrowserWindow({ onClose, onMinimize, icon }: BrowserWind
             <button
               onClick={() => handleNavigate()}
               style={{
-                padding: '6px 12px',
+                padding: windowWidth <= 480 ? '6px 8px' : '6px 12px',
                 background: '#e0e0e0',
                 border: '1px solid #c0c0c0',
                 cursor: 'pointer',
@@ -74,7 +74,7 @@ export default function BrowserWindow({ onClose, onMinimize, icon }: BrowserWind
                 whiteSpace: 'nowrap'
               }}
             >
-              🔄 Aggiorna
+              {windowWidth <= 480 ? '🔄' : '🔄 Aggiorna'}
             </button>
             <input
               type="text"
@@ -85,15 +85,16 @@ export default function BrowserWindow({ onClose, onMinimize, icon }: BrowserWind
               style={{
                 flex: 1,
                 padding: '6px 10px',
-                fontSize: windowWidth <= 480 ? '11px' : '12px',
+                fontSize: windowWidth <= 480 ? '16px' : '12px',
                 border: '2px inset #c0c0c0',
-                fontFamily: 'Segoe UI, Tahoma, sans-serif'
+                fontFamily: 'Segoe UI, Tahoma, sans-serif',
+                minWidth: '0'
               }}
             />
             <button
               onClick={handleNavigate}
               style={{
-                padding: '6px 12px',
+                padding: windowWidth <= 480 ? '6px 8px' : '6px 12px',
                 background: '#e0e0e0',
                 border: '1px solid #c0c0c0',
                 cursor: 'pointer',
