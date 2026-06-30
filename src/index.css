@@ -182,24 +182,21 @@ button, a, .desktop-icon, .window {
   outline: none !important;
 }
 
-/* Animazione Trillo MSN */
+/* Animazione Trillo MSN - Usa margin per evitare ghosting/tearing su GPU mobile */
 @keyframes nudge-shake {
-  0% { transform: translate(0, 0); }
-  10% { transform: translate(-10px, -10px); }
-  20% { transform: translate(10px, 10px); }
-  30% { transform: translate(-10px, 10px); }
-  40% { transform: translate(10px, -10px); }
-  50% { transform: translate(-10px, -10px); }
-  60% { transform: translate(10px, 10px); }
-  70% { transform: translate(-10px, 10px); }
-  80% { transform: translate(10px, -10px); }
-  90% { transform: translate(-10px, -10px); }
-  100% { transform: translate(0, 0); }
+  0% { margin: 0; }
+  10% { margin: -10px 0 0 -10px; }
+  20% { margin: 10px 0 0 10px; }
+  30% { margin: 10px 0 0 -10px; }
+  40% { margin: -10px 0 0 10px; }
+  50% { margin: -10px 0 0 -10px; }
+  60% { margin: 10px 0 0 10px; }
+  70% { margin: 10px 0 0 -10px; }
+  80% { margin: -10px 0 0 10px; }
+  90% { margin: -10px 0 0 -10px; }
+  100% { margin: 0; }
 }
 
 .nudge-shake {
   animation: nudge-shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
-  backface-visibility: hidden;
-  transform: translateZ(0);
-  will-change: transform;
 }
