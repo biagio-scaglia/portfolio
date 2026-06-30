@@ -1,5 +1,17 @@
 export default function Certifications() {
   const certifications = [
+    { 
+      name: 'Pre Security (SEC0) Certificate', 
+      issuer: 'TryHackMe', 
+      date: 'Rilasciata: apr 2026 - Scadenza: apr 2029',
+      credentialId: '69cea1adeb170aea55e91ffd'
+    },
+    { 
+      name: 'Pre Security Certificate', 
+      issuer: 'TryHackMe', 
+      date: 'Rilasciata: apr 2026 - Scadenza: apr 2029',
+      credentialId: 'THM-E8TJBPYZM8'
+    },
     { name: 'Cybersecurity Essential', issuer: 'Cisco', date: '06/01/2022' },
     { name: 'Wordpress Development', issuer: 'Programming Hub', date: '18/12/2023' },
     { name: 'SEO', issuer: 'Programming Hub', date: '23/11/2023' },
@@ -19,6 +31,11 @@ export default function Certifications() {
             <p style={{ margin: '6px 0', fontWeight: 'bold', fontSize: '13px' }}>{cert.name}</p>
             <p style={{ margin: '4px 0', fontSize: '12px', color: '#666' }}>{cert.issuer}</p>
             <p style={{ margin: '4px 0', fontSize: '12px', color: '#666' }}>{cert.date}</p>
+            {cert.credentialId && (
+              <p style={{ margin: '4px 0', fontSize: '11px', color: '#555' }}>
+                ID credenziale: <code>{cert.credentialId}</code>
+              </p>
+            )}
           </div>
         ))}
       </fieldset>
@@ -31,4 +48,3 @@ export default function Certifications() {
     </div>
   )
 }
-

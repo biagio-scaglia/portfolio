@@ -4,7 +4,7 @@ export default function Skills() {
       <fieldset>
         <legend>Hard Skills</legend>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '12px' }}>
-          {['HTML', 'CSS', 'Bootstrap', 'Java', 'Figma', 'JavaScript', 'React Native', 'Python', 'React', 'TypeScript', 'MySQL', 'PHP', 'JSON', 'Git', 'Laravel', 'Angular', 'Vue', 'Express', 'Canva'].map((skill) => (
+          {['HTML', 'CSS', 'Bootstrap', 'Java', 'Figma', 'JavaScript', 'React Native', 'Python', 'React', 'TypeScript', 'MySQL', 'PHP', 'JSON', 'Git', 'Laravel', 'Angular', 'Vue', 'Express', 'Canva', 'Flutter', '.NET', 'Astro', 'Telegram Bot API'].map((skill) => (
             <button
               key={skill}
               style={{
