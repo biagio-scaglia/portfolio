@@ -387,10 +387,13 @@ button:hover:not(:active) {
   }
 
   .start-button {
-    min-width: 50px !important;
-    width: 50px !important;
+    min-width: 40px !important;
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 50% !important;
     font-size: 12px !important;
     padding: 0 !important;
+    margin: 0 8px !important;
   }
 
   .start-button img {
@@ -468,10 +471,13 @@ button:hover:not(:active) {
   }
 
   .start-button {
-    min-width: 45px !important;
-    width: 45px !important;
+    min-width: 40px !important;
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 50% !important;
     font-size: 11px !important;
     padding: 0 !important;
+    margin: 0 8px !important;
   }
 
   .start-button img {

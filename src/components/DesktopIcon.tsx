@@ -16,6 +16,7 @@ const DesktopIcon = memo(function DesktopIcon({ icon, label, onClick, x = 0, y =
   const [isHovered, setIsHovered] = useState(false)
   const [internalSelected, setInternalSelected] = useState(false)
   const [position, setPosition] = useState({ x, y })
+  const positionRef = useRef({ x, y })
   const [isDragging, setIsDragging] = useState(false)
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 })
   const iconRef = useRef<HTMLDivElement>(null)
@@ -24,6 +25,7 @@ const DesktopIcon = memo(function DesktopIcon({ icon, label, onClick, x = 0, y =
 
   useEffect(() => {
     setPosition({ x, y })
+    positionRef.current = { x, y }
   }, [x, y])
 
   useEffect(() => {
@@ -67,14 +69,14 @@ const DesktopIcon = memo(function DesktopIcon({ icon, label, onClick, x = 0, y =
         constrainedX = maxX
       }
       
+      positionRef.current = { x: constrainedX, y: newY }
       setPosition({ x: constrainedX, y: newY })
     }
 
     const handleMouseUp = () => {
       setIsDragging(false)
-      if (onPositionChange && iconRef.current) {
-        const rect = iconRef.current.getBoundingClientRect()
-        onPositionChange(rect.left, rect.top)
+      if (onPositionChange) {
+        onPositionChange(positionRef.current.x, positionRef.current.y)
       }
     }
 

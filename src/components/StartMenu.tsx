@@ -16,7 +16,6 @@ import paintIcon from '../assets/icone/paint.png'
 import firefoxIcon from '../assets/icone/firefox.png'
 import calculatorIcon from '../assets/icone/calculator.png'
 import portfolioIcon from '../assets/icone/portfolio.png'
-import solitarioIcon from '../assets/icone/solitario.png'
 import cestinoIcon from '../assets/icone/cestino.png'
 import antivirusIcon from '../assets/icone/antivirus.png'
 import calendarIcon from '../assets/icone/calendar.png'
@@ -66,7 +65,6 @@ export default function StartMenu({ isOpen, onClose, onOpenWindow, onShutdown }:
     { icon: 'image', iconSrc: firefoxIcon, label: 'Firefox', window: 'browser' },
     { icon: 'image', iconSrc: calculatorIcon, label: 'Calcolatrice', window: 'calculator' },
     { icon: 'image', iconSrc: portfolioIcon, label: 'Portfolio', window: 'portfolio' },
-    { icon: 'image', iconSrc: solitarioIcon, label: 'Solitario', window: 'solitario' },
     { icon: 'image', iconSrc: cestinoIcon, label: 'Cestino', window: 'cestino' },
     { icon: 'image', iconSrc: antivirusIcon, label: 'Anti-Virus', window: 'antivirus' },
     { icon: 'image', iconSrc: calendarIcon, label: 'Calendario', window: 'calendar' },

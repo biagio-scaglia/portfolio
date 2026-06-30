@@ -24,7 +24,6 @@ import paintIcon from './assets/icone/paint.png'
 import firefoxIcon from './assets/icone/firefox.png'
 import calculatorIcon from './assets/icone/calculator.png'
 import portfolioIcon from './assets/icone/portfolio.png'
-import solitarioIcon from './assets/icone/solitario.png'
 import cestinoIcon from './assets/icone/cestino.png'
 import antivirusIcon from './assets/icone/antivirus.png'
 import calendarIcon from './assets/icone/calendar.png'
@@ -47,7 +46,6 @@ const PaintWindow = lazy(() => import('./components/PaintWindow'))
 const BrowserWindow = lazy(() => import('./components/BrowserWindow'))
 const Calculator = lazy(() => import('./components/Calculator'))
 const Portfolio = lazy(() => import('./components/Portfolio'))
-const Solitaire = lazy(() => import('./components/Solitaire'))
 const Cestino = lazy(() => import('./components/Cestino'))
 const AntiVirus = lazy(() => import('./components/AntiVirus'))
 const Calendar = lazy(() => import('./components/Calendar'))
@@ -79,7 +77,6 @@ function App() {
     browser: false,
     calculator: false,
     portfolio: false,
-    solitaire: false,
     cestino: false,
     antivirus: false,
     calendar: false,
@@ -179,15 +176,14 @@ function App() {
         education: { x: 20, y: 180 },
         certifications: { x: 100, y: 180 },
         note: { x: 20, y: 260 },
-        linkedin: { x: 20, y: 340 },
-        paint: { x: 100, y: 340 },
-        browser: { x: 20, y: 420 },
-        calculator: { x: 100, y: 420 },
-        portfolio: { x: 20, y: 500 },
-        solitaire: { x: 100, y: 500 },
-        cestino: { x: 20, y: 580 },
-        antivirus: { x: 100, y: 580 },
-        calendar: { x: 20, y: 660 },
+        linkedin: { x: 100, y: 260 },
+        paint: { x: 20, y: 340 },
+        browser: { x: 100, y: 340 },
+        calculator: { x: 20, y: 420 },
+        portfolio: { x: 100, y: 420 },
+        cestino: { x: 20, y: 500 },
+        antivirus: { x: 100, y: 500 },
+        calendar: { x: 20, y: 580 },
       }
     } else if (isTablet) {
       // Tablet: griglia 3 colonne
@@ -199,15 +195,14 @@ function App() {
         education: { x: 130, y: 120 },
         certifications: { x: 230, y: 120 },
         note: { x: 30, y: 210 },
-        linkedin: { x: 230, y: 210 },
-        paint: { x: 30, y: 300 },
-        browser: { x: 130, y: 300 },
-        calculator: { x: 230, y: 300 },
-        portfolio: { x: 30, y: 390 },
-        solitaire: { x: 130, y: 390 },
-        cestino: { x: 230, y: 390 },
-        antivirus: { x: 30, y: 480 },
-        calendar: { x: 130, y: 480 },
+        linkedin: { x: 130, y: 210 },
+        paint: { x: 230, y: 210 },
+        browser: { x: 30, y: 300 },
+        calculator: { x: 130, y: 300 },
+        portfolio: { x: 230, y: 300 },
+        cestino: { x: 30, y: 390 },
+        antivirus: { x: 130, y: 390 },
+        calendar: { x: 230, y: 390 },
       }
     } else {
       // Desktop: orizzontale
@@ -219,15 +214,14 @@ function App() {
         education: { x: 470, y: 30 },
         certifications: { x: 580, y: 30 },
         note: { x: 690, y: 30 },
-        linkedin: { x: 910, y: 30 },
-        paint: { x: 1020, y: 30 },
+        linkedin: { x: 800, y: 30 },
+        paint: { x: 910, y: 30 },
         browser: { x: 30, y: 130 },
         calculator: { x: 140, y: 130 },
         portfolio: { x: 250, y: 130 },
-        solitaire: { x: 360, y: 130 },
         cestino: { x: window.innerWidth - 100, y: window.innerHeight - 150 },
-        antivirus: { x: 470, y: 130 },
-        calendar: { x: 580, y: 130 },
+        antivirus: { x: 360, y: 130 },
+        calendar: { x: 470, y: 130 },
       }
     }
   }, [])
@@ -365,7 +359,6 @@ function App() {
       browser: false,
       calculator: false,
       portfolio: false,
-      solitaire: false,
       cestino: false,
       antivirus: false,
       calendar: false,
@@ -583,7 +576,6 @@ function App() {
       browser: 'Mozilla Firefox',
       calculator: 'Calcolatrice',
       portfolio: 'Portfolio - Progetti',
-      solitaire: 'Solitario',
       cestino: 'Cestino',
       antivirus: 'Anti-Virus - Protezione Sistema',
       calendar: 'Calendario',
@@ -808,21 +800,11 @@ function App() {
         />
       )}
       <DesktopIcon
-        icon={<img src={solitarioIcon} alt="Solitario" style={{ width: window.innerWidth <= 480 ? '44px' : window.innerWidth <= 768 ? '50px' : '48px', height: window.innerWidth <= 480 ? '44px' : window.innerWidth <= 768 ? '50px' : '48px', objectFit: 'contain', filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3))' }} />}
-        label="Solitario"
-        onClick={() => toggleWindow('solitaire')}
-        x={iconPositions.solitaire.x}
-        y={iconPositions.solitaire.y}
-        isSelected={selectedIcon === 'solitaire'}
-        onSelect={() => setSelectedIcon('solitaire')}
-        onPositionChange={(x, y) => handleIconPositionChange('solitaire', x, y)}
-      />
-      <DesktopIcon
         icon={<img src={cestinoIcon} alt="Cestino" style={{ width: window.innerWidth <= 480 ? '44px' : window.innerWidth <= 768 ? '50px' : '48px', height: window.innerWidth <= 480 ? '44px' : window.innerWidth <= 768 ? '50px' : '48px', objectFit: 'contain', filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3))' }} />}
         label="Cestino"
         onClick={() => toggleWindow('cestino')}
-        x={iconPositions.cestino?.x || (window.innerWidth <= 480 ? 20 : window.innerWidth <= 768 ? 230 : window.innerWidth - 100)}
-        y={iconPositions.cestino?.y || (window.innerWidth <= 480 ? 580 : window.innerWidth <= 768 ? 390 : window.innerHeight - 150)}
+        x={iconPositions.cestino?.x || (window.innerWidth <= 480 ? 20 : window.innerWidth <= 768 ? 30 : window.innerWidth - 100)}
+        y={iconPositions.cestino?.y || (window.innerWidth <= 480 ? 500 : window.innerWidth <= 768 ? 390 : window.innerHeight - 150)}
         isSelected={selectedIcon === 'cestino'}
         onSelect={() => setSelectedIcon('cestino')}
         onPositionChange={(x, y) => handleIconPositionChange('cestino', x, y)}
@@ -1045,15 +1027,6 @@ function App() {
           />
         </Suspense>
       )}
-      {openWindows.solitaire && !minimizedWindows.has('solitaire') && (
-        <Suspense fallback={<LoadingFallback />}>
-          <Solitaire 
-            onClose={() => handleClose('solitaire')}
-            onMinimize={() => handleMinimize('solitaire')}
-            icon={<img src={solitarioIcon} alt="" style={{ width: '16px', height: '16px', objectFit: 'contain', display: 'block', visibility: 'visible', opacity: 1 }} />}
-          />
-        </Suspense>
-      )}
       {openWindows.cestino && !minimizedWindows.has('cestino') && (
         <Suspense fallback={<LoadingFallback />}>
           <Cestino 
@@ -1109,17 +1082,17 @@ function App() {
             backdropFilter: 'blur(25px)',
             WebkitBackdropFilter: 'blur(25px)',
             border: 'none',
-            borderRight: '1px solid rgba(255, 255, 255, 0.2)',
             color: '#fff',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             gap: '6px',
-            width: '45px',
+            width: '40px',
             height: '40px',
-            borderRadius: '0',
-            boxShadow: showStartMenu || openWindows.about || openWindows.personalInfo || openWindows.workExperience || openWindows.skills || openWindows.education || openWindows.certifications || openWindows.note || openWindows.documents || openWindows.images || openWindows.computer || openWindows.music || openWindows.paint || openWindows.browser || openWindows.calculator || openWindows.portfolio || openWindows.solitaire || openWindows.cestino || openWindows.antivirus || openWindows.calendar
+            borderRadius: '50%',
+            margin: '0 8px',
+            boxShadow: showStartMenu || openWindows.about || openWindows.personalInfo || openWindows.workExperience || openWindows.skills || openWindows.education || openWindows.certifications || openWindows.note || openWindows.documents || openWindows.images || openWindows.computer || openWindows.music || openWindows.paint || openWindows.browser || openWindows.calculator || openWindows.portfolio || openWindows.cestino || openWindows.antivirus || openWindows.calendar
               ? 'inset 0 2px 4px rgba(0, 0, 0, 0.3), 0 0 8px rgba(100, 150, 255, 0.4)'
               : 'inset 0 1px 0 rgba(255, 255, 255, 0.3), inset 0 -1px 0 rgba(0, 0, 0, 0.2)',
             transition: 'all 0.2s',
@@ -1800,50 +1773,6 @@ function App() {
           />
         </button>
         <button
-          className={`taskbar-button ${isWindowActive('solitaire') ? 'is-active' : ''}`}
-          onClick={() => handleTaskbarClick('solitaire')}
-          onMouseEnter={(e) => handleTaskbarButtonHover('solitaire', e)}
-          onMouseLeave={handleTaskbarButtonLeave}
-          style={{
-            padding: '4px 12px',
-            fontSize: '11px',
-            border: 'none',
-            background: isWindowActive('solitaire')
-              ? 'linear-gradient(to bottom, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.3) 100%)'
-              : 'transparent',
-            backdropFilter: isWindowActive('solitaire') ? 'blur(25px)' : 'none',
-            WebkitBackdropFilter: isWindowActive('solitaire') ? 'blur(25px)' : 'none',
-            color: '#fff',
-            cursor: 'pointer',
-            fontWeight: isWindowActive('solitaire') ? 'bold' : 'normal',
-            minWidth: 'auto',
-            width: 'auto',
-            height: '36px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '6px',
-            borderRadius: '2px',
-            margin: '2px',
-            boxShadow: isWindowActive('solitaire')
-              ? 'inset 0 1px 0 rgba(255, 255, 255, 0.4), inset 0 -1px 0 rgba(0, 0, 0, 0.2), 0 0 6px rgba(100, 150, 255, 0.3)'
-              : 'none',
-            transition: 'all 0.2s',
-          }}
-        >
-          <img 
-            src={solitarioIcon} 
-            alt="Solitario" 
-            style={{ 
-              width: '18px', 
-              height: '18px',
-              objectFit: 'contain',
-              display: 'block',
-              filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.3))'
-            }} 
-          />
-        </button>
-        <button
           className={`taskbar-button ${isWindowActive('cestino') ? 'is-active' : ''}`}
           onClick={() => handleTaskbarClick('cestino')}
           onMouseEnter={(e) => handleTaskbarButtonHover('cestino', e)}
@@ -2379,26 +2308,6 @@ function App() {
                   <span style={{ fontSize: '10px', color: '#333', fontWeight: isWindowActive('portfolio') ? 'bold' : 'normal' }}>Portfolio</span>
                 </button>
                 <button
-                  onClick={() => { toggleWindow('solitaire'); setShowFloatingMenu(false); }}
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: '5px',
-                    padding: '10px',
-                    background: isWindowActive('solitaire')
-                      ? 'rgba(100, 150, 255, 0.2)'
-                      : 'transparent',
-                    border: 'none',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                  }}
-                >
-                  <img src={solitarioIcon} alt="Solitario" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
-                  <span style={{ fontSize: '10px', color: '#333', fontWeight: isWindowActive('solitaire') ? 'bold' : 'normal' }}>Solitario</span>
-                </button>
-                <button
                   onClick={() => { toggleWindow('cestino'); setShowFloatingMenu(false); }}
                   style={{
                     display: 'flex',
@@ -2490,6 +2399,8 @@ function App() {
           windowTitle={getWindowTitle(hoveredTaskbarButton.window)}
           isOpen={openWindows[hoveredTaskbarButton.window]}
           isMinimized={minimizedWindows.has(hoveredTaskbarButton.window)}
+          onThumbnailEnter={handleThumbnailEnter}
+          onThumbnailLeave={handleThumbnailLeave}
           onOpen={() => {
             setOpenWindows((prev) => ({ ...prev, [hoveredTaskbarButton!.window]: true }))
             if (minimizedWindows.has(hoveredTaskbarButton!.window)) {
@@ -2509,8 +2420,6 @@ function App() {
             handleMinimize(hoveredTaskbarButton!.window)
             setHoveredTaskbarButton(null)
           }}
-          onThumbnailEnter={handleThumbnailEnter}
-          onThumbnailLeave={handleThumbnailLeave}
           buttonRect={hoveredTaskbarButton.buttonRect}
         />
       )}

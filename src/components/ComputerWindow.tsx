@@ -125,7 +125,6 @@ export default function ComputerWindow({ onClose, onMinimize, icon }: ComputerWi
             <div style={{ fontSize: windowWidth <= 480 ? '11px' : '12px', color: '#333', marginLeft: '12px' }}>
               • <strong>Calcolatrice</strong> - Calcolatrice funzionale con operazioni base<br/>
               • <strong>Portfolio</strong> - Visualizzazione progetti GitHub con tecnologie e link<br/>
-              • <strong>Solitario</strong> - Gioco Solitario Klondike completo e funzionale<br/>
               • <strong>Cestino</strong> - Gestione file eliminati con ripristino e svuotamento<br/>
               • <strong>Anti-Virus</strong> - Simulazione scansione sistema con spinner 7.css<br/>
               • <strong>Calendario</strong> - Calendario mensile con navigazione e selezione date<br/>
