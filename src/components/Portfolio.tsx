@@ -36,6 +36,7 @@ export default function Portfolio({ onClose, onMinimize, icon }: CalculatorProps
       description: 'Portfolio interattivo che simula l\'interfaccia di Windows 7, realizzato con React e TypeScript. Include animazioni, effetti glass e un sistema di finestre completo.',
       technologies: ['React', 'TypeScript', 'CSS', '7.css'],
       github: 'https://github.com/biagio-scaglia/portfolio',
+      link: 'https://biagio-scaglia.github.io/portfolio/',
     },
     {
       id: 2,
@@ -66,6 +67,7 @@ export default function Portfolio({ onClose, onMinimize, icon }: CalculatorProps
       description: 'Applicazione web ispirata a Tinder ma dedicata agli sviluppatori. Permette di scoprire e matchare con linguaggi di programmazione, framework e tecnologie. Sviluppata con Angular e TypeScript.',
       technologies: ['Angular', 'TypeScript', 'Web App'],
       github: 'https://github.com/biagio-scaglia/dev-swipe',
+      link: 'https://biagio-scaglia.github.io/dev-swipe/',
       image: swipeImage,
     },
     {
@@ -74,6 +76,7 @@ export default function Portfolio({ onClose, onMinimize, icon }: CalculatorProps
       description: 'Sito web per un centro di adozione felini sviluppato con Angular. Include galleria di gatti disponibili, informazioni sulle adozioni e sistema di gestione per il centro.',
       technologies: ['Angular', 'TypeScript', 'Web Design'],
       github: 'https://github.com/biagio-scaglia/cats-angular',
+      link: 'https://biagio-scaglia.github.io/cats-angular/',
       image: catsImage,
     },
     {
@@ -82,6 +85,7 @@ export default function Portfolio({ onClose, onMinimize, icon }: CalculatorProps
       description: 'Sito web tematico dedicato alla serie Devil Summoner: Raidou Kuzunoha. Sviluppato con Angular per esplorare lo styling e il design ispirato alla serie.',
       technologies: ['Angular', 'TypeScript', 'Web Design'],
       github: 'https://github.com/biagio-scaglia/raidou-angular',
+      link: 'https://biagio-scaglia.github.io/raidou-angular/',
       image: raidouImage,
     },
     {
@@ -90,6 +94,7 @@ export default function Portfolio({ onClose, onMinimize, icon }: CalculatorProps
       description: 'Sito web tematico dedicato alla PlayStation 2. Progetto Angular focalizzato sullo styling e il design ispirato alla console e ai suoi giochi iconici.',
       technologies: ['Angular', 'TypeScript', 'Web Design'],
       github: 'https://github.com/biagio-scaglia/angular-ps2',
+      link: 'https://biagio-scaglia.github.io/angular-ps2/',
       image: ps2Image,
     },
     {
@@ -98,6 +103,7 @@ export default function Portfolio({ onClose, onMinimize, icon }: CalculatorProps
       description: 'Sito web tematico dedicato alla serie Persona. Sviluppato con Angular per esplorare lo styling e creare un\'esperienza visiva ispirata al mondo di Persona.',
       technologies: ['Angular', 'TypeScript', 'Web Design'],
       github: 'https://github.com/biagio-scaglia/persona-angular',
+      link: 'https://biagio-scaglia.github.io/persona-angular/',
       image: personaImage,
     },
     {
@@ -120,6 +126,7 @@ export default function Portfolio({ onClose, onMinimize, icon }: CalculatorProps
       description: 'Sito web educativo in React/TypeScript sull\'Istiocitosi a Cellule di Langerhans (ICL), malattia rara che colpisce principalmente i bambini. Include 8 sezioni informative (Home, Proteine Coinvolte, Sintomi, Diagnostica, Trattamenti, Statistiche, Prevenzione, Fonti) con design responsive, animazioni Framer Motion, effetti glassmorphism e icone SVG mediche. Tutti i contenuti sono organizzati in JSON per facilità di gestione.',
       technologies: ['React', 'TypeScript', 'Vite', 'Framer Motion', 'React Router', 'Radix UI Icons', 'GitHub Pages'],
       github: 'https://github.com/biagio-scaglia/biologia',
+      link: 'https://biagio-scaglia.github.io/biologia/',
     },
     {
       id: 13,
@@ -348,7 +355,8 @@ export default function Portfolio({ onClose, onMinimize, icon }: CalculatorProps
                 <div style={{ 
                   display: 'flex', 
                   gap: windowSize.isMobile ? '8px' : '10px',
-                  flexWrap: 'wrap'
+                  flexWrap: 'wrap',
+                  marginBottom: selectedProject.link ? '15px' : '0'
                 }}>
                   {selectedProject.link && (
                     <a
@@ -360,7 +368,7 @@ export default function Portfolio({ onClose, onMinimize, icon }: CalculatorProps
                         display: 'inline-block',
                       }}
                     >
-                      <button type="button">🔗 Vedi Progetto</button>
+                      <button type="button">🔗 Apri in nuova scheda</button>
                     </a>
                   )}
                   {selectedProject.github && (
@@ -376,6 +384,26 @@ export default function Portfolio({ onClose, onMinimize, icon }: CalculatorProps
                       <button type="button">📂 GitHub</button>
                     </a>
                   )}
+                </div>
+              )}
+
+              {selectedProject.link && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '15px' }}>
+                  <h3 style={{ fontSize: windowSize.isMobile ? '13px' : '14px', margin: '0 0 5px 0' }}>Anteprima Interattiva:</h3>
+                  <div style={{
+                    width: '100%',
+                    height: windowSize.isMobile ? '250px' : windowSize.isTablet ? '350px' : '400px',
+                    border: '2px inset #c0c0c0',
+                    background: '#fff',
+                    borderRadius: '4px',
+                    overflow: 'hidden'
+                  }}>
+                    <iframe
+                      src={selectedProject.link}
+                      title={selectedProject.name}
+                      style={{ width: '100%', height: '100%', border: 'none' }}
+                    />
+                  </div>
                 </div>
               )}
             </div>

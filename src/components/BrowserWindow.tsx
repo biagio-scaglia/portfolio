@@ -8,9 +8,14 @@ interface BrowserWindowProps {
 }
 
 export default function BrowserWindow({ onClose, onMinimize, icon }: BrowserWindowProps) {
-  const [url, setUrl] = useState('https://www.mozilla.org')
-  const [currentUrl, setCurrentUrl] = useState('https://www.mozilla.org')
+  const [url, setUrl] = useState('https://biagio-scaglia.github.io/portfolio/')
+  const [currentUrl, setCurrentUrl] = useState('https://biagio-scaglia.github.io/portfolio/')
   const [windowWidth, setWindowWidth] = useState(window.innerWidth)
+
+  const isEmbeddable = (targetUrl: string) => {
+    const cleanUrl = targetUrl.toLowerCase().trim()
+    return cleanUrl.includes('biagio-scaglia.github.io') || cleanUrl.includes('localhost') || cleanUrl.includes('127.0.0.1')
+  }
 
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth)
@@ -19,7 +24,12 @@ export default function BrowserWindow({ onClose, onMinimize, icon }: BrowserWind
   }, [])
 
   const handleNavigate = () => {
-    setCurrentUrl(url)
+    let targetUrl = url.trim()
+    if (!/^https?:\/\//i.test(targetUrl) && !targetUrl.startsWith('localhost') && !targetUrl.startsWith('127.0.0.1')) {
+      targetUrl = 'https://' + targetUrl
+    }
+    setCurrentUrl(targetUrl)
+    setUrl(targetUrl)
   }
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -29,6 +39,7 @@ export default function BrowserWindow({ onClose, onMinimize, icon }: BrowserWind
   }
 
   const quickLinks = [
+    { name: 'Portfolio 🔗', url: 'https://biagio-scaglia.github.io/portfolio/', isExternal: false },
     { name: 'Google', url: 'https://www.google.com', isExternal: false },
     { name: 'GitHub', url: 'https://github.com/biagio-scaglia', isExternal: true },
     { name: 'Mozilla', url: 'https://www.mozilla.org', isExternal: false },
@@ -152,62 +163,82 @@ export default function BrowserWindow({ onClose, onMinimize, icon }: BrowserWind
           position: 'relative',
           display: 'flex',
           flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '20px'
         }}>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: windowWidth <= 480 ? '48px' : '64px', marginBottom: '20px' }}>
-              🦊
-            </div>
-            <h2 style={{ 
-              fontSize: windowWidth <= 480 ? '18px' : '24px', 
-              marginBottom: '10px',
-              color: '#333'
-            }}>
-              Mozilla Firefox
-            </h2>
-            <p style={{ 
-              fontSize: windowWidth <= 480 ? '12px' : '14px', 
-              color: '#666',
-              marginBottom: '20px'
-            }}>
-              Browser simulato
-            </p>
+          {isEmbeddable(currentUrl) ? (
+            <iframe
+              src={currentUrl}
+              title="Browser Content"
+              style={{
+                width: '100%',
+                height: '100%',
+                border: 'none',
+                background: '#fff'
+              }}
+            />
+          ) : (
             <div style={{ 
-              padding: '15px',
-              background: '#f0f0f0',
-              borderRadius: '4px',
-              fontSize: windowWidth <= 480 ? '11px' : '12px',
-              color: '#333',
-              maxWidth: '500px',
-              margin: '0 auto'
+              display: 'flex', 
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '20px',
+              height: '100%',
+              textAlign: 'center'
             }}>
-              <p style={{ margin: '0 0 10px 0' }}>
-                <strong>URL corrente:</strong>
-              </p>
-              <p style={{ 
-                margin: 0, 
-                wordBreak: 'break-all',
-                fontFamily: 'monospace',
-                color: '#0078d4'
-              }}>
-                {currentUrl}
-              </p>
+              <div>
+                <div style={{ fontSize: windowWidth <= 480 ? '48px' : '64px', marginBottom: '20px' }}>
+                  🦊
+                </div>
+                <h2 style={{ 
+                  fontSize: windowWidth <= 480 ? '18px' : '24px', 
+                  marginBottom: '10px',
+                  color: '#333'
+                }}>
+                  Mozilla Firefox
+                </h2>
+                <p style={{ 
+                  fontSize: windowWidth <= 480 ? '12px' : '14px', 
+                  color: '#666',
+                  marginBottom: '20px'
+                }}>
+                  Browser simulato
+                </p>
+                <div style={{ 
+                  padding: '15px',
+                  background: '#f0f0f0',
+                  borderRadius: '4px',
+                  fontSize: windowWidth <= 480 ? '11px' : '12px',
+                  color: '#333',
+                  maxWidth: '500px',
+                  margin: '0 auto'
+                }}>
+                  <p style={{ margin: '0 0 10px 0' }}>
+                    <strong>URL corrente:</strong>
+                  </p>
+                  <p style={{ 
+                    margin: 0, 
+                    wordBreak: 'break-all',
+                    fontFamily: 'monospace',
+                    color: '#0078d4'
+                  }}>
+                    {currentUrl}
+                  </p>
+                </div>
+                <div style={{ 
+                  marginTop: '30px',
+                  padding: '15px',
+                  background: '#fff3cd',
+                  borderRadius: '4px',
+                  fontSize: windowWidth <= 480 ? '11px' : '12px',
+                  color: '#856404',
+                  maxWidth: '500px',
+                  margin: '30px auto 0'
+                }}>
+                  ⚠️ Questo è un browser simulato. Non è possibile navigare su siti reali che bloccano il caricamento in iframe.
+                </div>
+              </div>
             </div>
-            <div style={{ 
-              marginTop: '30px',
-              padding: '15px',
-              background: '#fff3cd',
-              borderRadius: '4px',
-              fontSize: windowWidth <= 480 ? '11px' : '12px',
-              color: '#856404',
-              maxWidth: '500px',
-              margin: '30px auto 0'
-            }}>
-              ⚠️ Questo è un browser simulato. Non è possibile navigare su siti reali.
-            </div>
-          </div>
+          )}
         </div>
 
         {/* Barra di stato */}
