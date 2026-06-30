@@ -60,6 +60,7 @@ function App() {
   const [showStartMenu, setShowStartMenu] = useState(false)
   const [showShutdownScreen, setShowShutdownScreen] = useState(false)
   const [showFloatingMenu, setShowFloatingMenu] = useState(false)
+  const [mobileSearchQuery, setMobileSearchQuery] = useState('')
   const [windowWidth, setWindowWidth] = useState(window.innerWidth)
   const [openWindows, setOpenWindows] = useState({
     about: false,
@@ -91,6 +92,12 @@ function App() {
 
   // Ottieni lista di tutti gli sfondi disponibili (escluso Starter) - lazy loading
   const [allBackgrounds, setAllBackgrounds] = useState<string[]>([defaultBackground])
+
+  useEffect(() => {
+    if (!showFloatingMenu) {
+      setMobileSearchQuery('')
+    }
+  }, [showFloatingMenu])
     
   useEffect(() => {
     // Carica le immagini in modo lazy
@@ -1991,425 +1998,286 @@ function App() {
           </div>
           
           {/* Floating Menu */}
-          {showFloatingMenu && (
-            <div
-              onClick={() => setShowFloatingMenu(false)}
-              style={{
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                background: 'rgba(0, 0, 0, 0.3)',
-                zIndex: 10000,
-                backdropFilter: 'blur(5px)',
-                WebkitBackdropFilter: 'blur(5px)',
-              }}
-            >
+          {showFloatingMenu && (() => {
+            const mobileMenuItems = [
+              { id: 'about', label: 'Presentazione', icon: infoIcon },
+              { id: 'personalInfo', label: 'Info Personali', icon: userIcon },
+              { id: 'workExperience', label: 'Esperienze', icon: workExperienceIcon },
+              { id: 'skills', label: 'Competenze', icon: skillsIcon },
+              { id: 'education', label: 'Formazione', icon: educationIcon },
+              { id: 'certifications', label: 'Certificazioni', icon: certificationsIcon },
+              { id: 'note', label: 'Note', icon: noteIcon },
+              { id: 'documents', label: 'Documenti', icon: folderIcon },
+              { id: 'images', label: 'Immagini', icon: immaginiIcon },
+              { id: 'computer', label: 'Computer', icon: computerIcon },
+              { id: 'music', label: 'Musica', icon: musicIcon },
+              { id: 'paint', label: 'Paint', icon: paintIcon },
+              { id: 'browser', label: 'Firefox', icon: firefoxIcon },
+              { id: 'calculator', label: 'Calcolatrice', icon: calculatorIcon },
+              { id: 'portfolio', label: 'Portfolio', icon: portfolioIcon },
+              { id: 'cestino', label: 'Cestino', icon: cestinoIcon },
+              { id: 'antivirus', label: 'Anti-Virus', icon: antivirusIcon },
+              { id: 'calendar', label: 'Calendario', icon: calendarIcon },
+              { id: 'desktopStartMenu', label: 'Start Menu', icon: taskbarIcon },
+            ];
+
+            const filteredMobileItems = mobileMenuItems.filter(item =>
+              item.label.toLowerCase().includes(mobileSearchQuery.toLowerCase())
+            );
+
+            return (
               <div
-                onClick={(e) => e.stopPropagation()}
+                onClick={() => setShowFloatingMenu(false)}
                 style={{
                   position: 'fixed',
-                  bottom: '200px',
-                  right: '20px',
-                  width: windowWidth <= 480 ? 'calc(100vw - 40px)' : '400px',
-                  height: windowWidth <= 480 ? 'calc(100vw - 40px)' : '400px',
-                  maxHeight: 'calc(100vh - 220px)',
-                  background: '#ffffff',
-                  border: '2px solid rgba(0, 0, 0, 0.1)',
-                  borderRadius: '0',
-                  boxShadow: '0 8px 40px rgba(0, 0, 0, 0.3)',
-                  padding: '20px',
-                  overflowY: 'auto',
-                  display: 'grid',
-                  gridTemplateColumns: windowWidth <= 480 ? 'repeat(3, 1fr)' : 'repeat(4, 1fr)',
-                  gap: '12px',
-                  zIndex: 10001,
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  background: 'rgba(0, 0, 0, 0.4)',
+                  zIndex: 10000,
+                  backdropFilter: 'blur(10px)',
+                  WebkitBackdropFilter: 'blur(10px)',
                 }}
               >
-                <button
-                  onClick={() => { toggleWindow('about'); setShowFloatingMenu(false); }}
+                <div
+                  onClick={(e) => e.stopPropagation()}
                   style={{
+                    position: 'fixed',
+                    bottom: '190px',
+                    left: windowWidth <= 480 ? '20px' : 'auto',
+                    right: '20px',
+                    width: windowWidth <= 480 ? 'calc(100vw - 40px)' : '380px',
+                    maxHeight: 'calc(100vh - 280px)',
+                    background: 'linear-gradient(135deg, rgba(25, 55, 95, 0.85) 0%, rgba(12, 30, 60, 0.9) 100%)',
+                    backdropFilter: 'blur(30px)',
+                    WebkitBackdropFilter: 'blur(30px)',
+                    border: '1px solid rgba(255, 255, 255, 0.3)',
+                    borderRadius: '16px',
+                    boxShadow: '0 15px 35px rgba(0, 0, 0, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.4)',
                     display: 'flex',
                     flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: '5px',
-                    padding: '10px',
-                    background: isWindowActive('about')
-                      ? 'rgba(100, 150, 255, 0.2)'
-                      : 'transparent',
-                    border: 'none',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
+                    overflow: 'hidden',
+                    fontFamily: 'Segoe UI, Tahoma, sans-serif',
+                    zIndex: 10001,
                   }}
                 >
-                  <img src={infoIcon} alt="Presentazione" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
-                  <span style={{ fontSize: '10px', color: '#333', fontWeight: isWindowActive('about') ? 'bold' : 'normal' }}>Presentazione</span>
-                </button>
-                <button
-                  onClick={() => { toggleWindow('personalInfo'); setShowFloatingMenu(false); }}
-                  style={{
+                  {/* Header */}
+                  <div style={{
                     display: 'flex',
-                    flexDirection: 'column',
                     alignItems: 'center',
-                    gap: '5px',
-                    padding: '10px',
-                    background: isWindowActive('personalInfo')
-                      ? 'rgba(100, 150, 255, 0.2)'
-                      : 'transparent',
-                    border: 'none',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                  }}
-                >
-                  <img src={userIcon} alt="Info Personali" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
-                  <span style={{ fontSize: '10px', color: '#333', fontWeight: isWindowActive('personalInfo') ? 'bold' : 'normal' }}>Info Personali</span>
-                </button>
-                <button
-                  onClick={() => { toggleWindow('workExperience'); setShowFloatingMenu(false); }}
-                  style={{
+                    gap: '12px',
+                    padding: '14px 18px',
+                    background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05))',
+                    borderBottom: '1px solid rgba(255, 255, 255, 0.15)',
+                  }}>
+                    <div style={{
+                      width: '36px',
+                      height: '36px',
+                      borderRadius: '50%',
+                      border: '2px solid rgba(255, 255, 255, 0.8)',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                      overflow: 'hidden',
+                      background: 'rgba(255, 255, 255, 0.2)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}>
+                      <img src={userIcon} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column' }}>
+                      <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#ffffff', textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>Biagio Scaglia</span>
+                      <span style={{ fontSize: '10px', color: 'rgba(255, 255, 255, 0.7)' }}>Web Developer</span>
+                    </div>
+                  </div>
+
+                  {/* Scrollable Items Grid */}
+                  <div style={{
+                    flex: 1,
+                    overflowY: 'auto',
+                    padding: '16px',
+                    display: 'grid',
+                    gridTemplateColumns: windowWidth <= 480 ? 'repeat(3, 1fr)' : 'repeat(4, 1fr)',
+                    gap: '12px',
+                  }}>
+                    {filteredMobileItems.map((item) => {
+                      const isActive = item.id === 'desktopStartMenu'
+                        ? showStartMenu
+                        : isWindowActive(item.id as keyof typeof openWindows);
+                      
+                      return (
+                        <button
+                          key={item.id}
+                          onClick={() => {
+                            if (item.id === 'desktopStartMenu') {
+                              setShowStartMenu(true);
+                              setShowFloatingMenu(false);
+                            } else {
+                              toggleWindow(item.id as keyof typeof openWindows);
+                              setShowFloatingMenu(false);
+                            }
+                          }}
+                          style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '6px',
+                            padding: '12px 6px',
+                            background: isActive
+                              ? 'rgba(255, 255, 255, 0.2)'
+                              : 'rgba(255, 255, 255, 0.08)',
+                            border: isActive
+                              ? '1px solid rgba(255, 255, 255, 0.4)'
+                              : '1px solid rgba(255, 255, 255, 0.1)',
+                            borderRadius: '12px',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                            outline: 'none',
+                            WebkitTapHighlightColor: 'transparent',
+                            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.background = 'rgba(255, 255, 255, 0.22)'
+                            e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.4)'
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.background = isActive
+                              ? 'rgba(255, 255, 255, 0.2)'
+                              : 'rgba(255, 255, 255, 0.08)'
+                            e.currentTarget.style.borderColor = isActive
+                              ? '1px solid rgba(255, 255, 255, 0.4)'
+                              : '1px solid rgba(255, 255, 255, 0.1)'
+                          }}
+                        >
+                          <img 
+                            src={item.icon} 
+                            alt={item.label} 
+                            style={{ 
+                              width: '32px', 
+                              height: '32px', 
+                              objectFit: 'contain',
+                              filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))'
+                            }} 
+                          />
+                          <span style={{ 
+                            fontSize: '11px', 
+                            color: '#ffffff', 
+                            fontWeight: isActive ? 'bold' : 'normal',
+                            textAlign: 'center',
+                            wordBreak: 'break-word',
+                            textShadow: '0 1px 2px rgba(0,0,0,0.4)',
+                          }}>
+                            {item.label}
+                          </span>
+                        </button>
+                      );
+                    })}
+                    {filteredMobileItems.length === 0 && (
+                      <div style={{
+                        gridColumn: '1 / -1',
+                        padding: '30px 10px',
+                        textAlign: 'center',
+                        color: 'rgba(255, 255, 255, 0.6)',
+                        fontSize: '13px',
+                        fontStyle: 'italic',
+                      }}>
+                        Nessun risultato trovato
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Footer */}
+                  <div style={{
+                    padding: '12px 16px',
+                    background: 'rgba(0, 0, 0, 0.25)',
+                    borderTop: '1px solid rgba(255, 255, 255, 0.15)',
                     display: 'flex',
-                    flexDirection: 'column',
+                    justifyContent: 'space-between',
                     alignItems: 'center',
-                    gap: '5px',
-                    padding: '10px',
-                    background: isWindowActive('workExperience')
-                      ? 'rgba(100, 150, 255, 0.2)'
-                      : 'transparent',
-                    border: 'none',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                  }}
-                >
-                  <img src={workExperienceIcon} alt="Esperienze" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
-                  <span style={{ fontSize: '10px', color: '#333', fontWeight: isWindowActive('workExperience') ? 'bold' : 'normal' }}>Esperienze</span>
-                </button>
-                <button
-                  onClick={() => { toggleWindow('skills'); setShowFloatingMenu(false); }}
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: '5px',
-                    padding: '10px',
-                    background: isWindowActive('skills')
-                      ? 'rgba(100, 150, 255, 0.2)'
-                      : 'transparent',
-                    border: 'none',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                  }}
-                >
-                  <img src={skillsIcon} alt="Competenze" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
-                  <span style={{ fontSize: '10px', color: '#333', fontWeight: isWindowActive('skills') ? 'bold' : 'normal' }}>Competenze</span>
-                </button>
-                <button
-                  onClick={() => { toggleWindow('education'); setShowFloatingMenu(false); }}
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: '5px',
-                    padding: '10px',
-                    background: isWindowActive('education')
-                      ? 'rgba(100, 150, 255, 0.2)'
-                      : 'transparent',
-                    border: 'none',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                  }}
-                >
-                  <img src={educationIcon} alt="Formazione" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
-                  <span style={{ fontSize: '10px', color: '#333', fontWeight: isWindowActive('education') ? 'bold' : 'normal' }}>Formazione</span>
-                </button>
-                <button
-                  onClick={() => { toggleWindow('certifications'); setShowFloatingMenu(false); }}
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: '5px',
-                    padding: '10px',
-                    background: isWindowActive('certifications')
-                      ? 'rgba(100, 150, 255, 0.2)'
-                      : 'transparent',
-                    border: 'none',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                  }}
-                >
-                  <img src={certificationsIcon} alt="Certificazioni" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
-                  <span style={{ fontSize: '10px', color: '#333', fontWeight: isWindowActive('certifications') ? 'bold' : 'normal' }}>Certificazioni</span>
-                </button>
-                <button
-                  onClick={() => { toggleWindow('note'); setShowFloatingMenu(false); }}
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: '5px',
-                    padding: '10px',
-                    background: isWindowActive('note')
-                      ? 'rgba(100, 150, 255, 0.2)'
-                      : 'transparent',
-                    border: 'none',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                  }}
-                >
-                  <img src={noteIcon} alt="Note" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
-                  <span style={{ fontSize: '10px', color: '#333', fontWeight: isWindowActive('note') ? 'bold' : 'normal' }}>Note</span>
-                </button>
-                <button
-                  onClick={() => { toggleWindow('documents'); setShowFloatingMenu(false); }}
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: '5px',
-                    padding: '10px',
-                    background: isWindowActive('documents')
-                      ? 'rgba(100, 150, 255, 0.2)'
-                      : 'transparent',
-                    border: 'none',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                  }}
-                >
-                  <img src={folderIcon} alt="Documenti" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
-                  <span style={{ fontSize: '10px', color: '#333', fontWeight: isWindowActive('documents') ? 'bold' : 'normal' }}>Documenti</span>
-                </button>
-                <button
-                  onClick={() => { toggleWindow('images'); setShowFloatingMenu(false); }}
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: '5px',
-                    padding: '10px',
-                    background: isWindowActive('images')
-                      ? 'rgba(100, 150, 255, 0.2)'
-                      : 'transparent',
-                    border: 'none',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                  }}
-                >
-                  <img src={immaginiIcon} alt="Immagini" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
-                  <span style={{ fontSize: '10px', color: '#333', fontWeight: isWindowActive('images') ? 'bold' : 'normal' }}>Immagini</span>
-                </button>
-                <button
-                  onClick={() => { toggleWindow('computer'); setShowFloatingMenu(false); }}
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: '5px',
-                    padding: '10px',
-                    background: isWindowActive('computer')
-                      ? 'rgba(100, 150, 255, 0.2)'
-                      : 'transparent',
-                    border: 'none',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                  }}
-                >
-                  <img src={computerIcon} alt="Computer" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
-                  <span style={{ fontSize: '10px', color: '#333', fontWeight: isWindowActive('computer') ? 'bold' : 'normal' }}>Computer</span>
-                </button>
-                <button
-                  onClick={() => { toggleWindow('music'); setShowFloatingMenu(false); }}
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: '5px',
-                    padding: '10px',
-                    background: isWindowActive('music')
-                      ? 'rgba(100, 150, 255, 0.2)'
-                      : 'transparent',
-                    border: 'none',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                  }}
-                >
-                  <img src={musicIcon} alt="Musica" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
-                  <span style={{ fontSize: '10px', color: '#333', fontWeight: isWindowActive('music') ? 'bold' : 'normal' }}>Musica</span>
-                </button>
-                <button
-                  onClick={() => { toggleWindow('paint'); setShowFloatingMenu(false); }}
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: '5px',
-                    padding: '10px',
-                    background: isWindowActive('paint')
-                      ? 'rgba(100, 150, 255, 0.2)'
-                      : 'transparent',
-                    border: 'none',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                  }}
-                >
-                  <img src={paintIcon} alt="Paint" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
-                  <span style={{ fontSize: '10px', color: '#333', fontWeight: isWindowActive('paint') ? 'bold' : 'normal' }}>Paint</span>
-                </button>
-                <button
-                  onClick={() => { toggleWindow('browser'); setShowFloatingMenu(false); }}
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: '5px',
-                    padding: '10px',
-                    background: isWindowActive('browser')
-                      ? 'rgba(100, 150, 255, 0.2)'
-                      : 'transparent',
-                    border: 'none',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                  }}
-                >
-                  <img src={firefoxIcon} alt="Firefox" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
-                  <span style={{ fontSize: '10px', color: '#333', fontWeight: isWindowActive('browser') ? 'bold' : 'normal' }}>Firefox</span>
-                </button>
-                <button
-                  onClick={() => { toggleWindow('calculator'); setShowFloatingMenu(false); }}
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: '5px',
-                    padding: '10px',
-                    background: isWindowActive('calculator')
-                      ? 'rgba(100, 150, 255, 0.2)'
-                      : 'transparent',
-                    border: 'none',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                  }}
-                >
-                  <img src={calculatorIcon} alt="Calcolatrice" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
-                  <span style={{ fontSize: '10px', color: '#333', fontWeight: isWindowActive('calculator') ? 'bold' : 'normal' }}>Calcolatrice</span>
-                </button>
-                <button
-                  onClick={() => { toggleWindow('portfolio'); setShowFloatingMenu(false); }}
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: '5px',
-                    padding: '10px',
-                    background: isWindowActive('portfolio')
-                      ? 'rgba(100, 150, 255, 0.2)'
-                      : 'transparent',
-                    border: 'none',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                  }}
-                >
-                  <img src={portfolioIcon} alt="Portfolio" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
-                  <span style={{ fontSize: '10px', color: '#333', fontWeight: isWindowActive('portfolio') ? 'bold' : 'normal' }}>Portfolio</span>
-                </button>
-                <button
-                  onClick={() => { toggleWindow('cestino'); setShowFloatingMenu(false); }}
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: '5px',
-                    padding: '10px',
-                    background: isWindowActive('cestino')
-                      ? 'rgba(100, 150, 255, 0.2)'
-                      : 'transparent',
-                    border: 'none',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                  }}
-                >
-                  <img src={cestinoIcon} alt="Cestino" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
-                  <span style={{ fontSize: '10px', color: '#333', fontWeight: isWindowActive('cestino') ? 'bold' : 'normal' }}>Cestino</span>
-                </button>
-                <button
-                  onClick={() => { toggleWindow('antivirus'); setShowFloatingMenu(false); }}
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: '5px',
-                    padding: '10px',
-                    background: isWindowActive('antivirus')
-                      ? 'rgba(100, 150, 255, 0.2)'
-                      : 'transparent',
-                    border: 'none',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                  }}
-                >
-                  <img src={antivirusIcon} alt="Anti-Virus" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
-                  <span style={{ fontSize: '10px', color: '#333', fontWeight: isWindowActive('antivirus') ? 'bold' : 'normal' }}>Anti-Virus</span>
-                </button>
-                <button
-                  onClick={() => { toggleWindow('calendar'); setShowFloatingMenu(false); }}
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: '5px',
-                    padding: '10px',
-                    background: isWindowActive('calendar')
-                      ? 'rgba(100, 150, 255, 0.2)'
-                      : 'transparent',
-                    border: 'none',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                  }}
-                >
-                  <img src={calendarIcon} alt="Calendario" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
-                  <span style={{ fontSize: '10px', color: '#333', fontWeight: isWindowActive('calendar') ? 'bold' : 'normal' }}>Calendario</span>
-                </button>
-                <button
-                  onClick={() => { setShowStartMenu(true); setShowFloatingMenu(false); }}
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    gap: '5px',
-                    padding: '10px',
-                    background: showStartMenu
-                      ? 'rgba(100, 150, 255, 0.2)'
-                      : 'transparent',
-                    border: 'none',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                  }}
-                >
-                  <img src={taskbarIcon} alt="Start Menu" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
-                  <span style={{ fontSize: '10px', color: '#333', fontWeight: showStartMenu ? 'bold' : 'normal' }}>Start Menu</span>
-                </button>
+                    gap: '12px'
+                  }}>
+                    {/* Search Field */}
+                    <div style={{
+                      flex: 1,
+                      position: 'relative',
+                      display: 'flex',
+                      alignItems: 'center',
+                    }}>
+                      <input 
+                        type="text"
+                        placeholder="Cerca programmi e file..."
+                        value={mobileSearchQuery}
+                        onChange={(e) => setMobileSearchQuery(e.target.value)}
+                        onClick={(e) => e.stopPropagation()}
+                        style={{
+                          width: '100%',
+                          padding: '8px 10px 8px 30px',
+                          fontSize: '13px',
+                          background: 'rgba(255, 255, 255, 0.15)',
+                          border: '1px solid rgba(255, 255, 255, 0.25)',
+                          borderRadius: '6px',
+                          color: '#fff',
+                          outline: 'none',
+                          fontFamily: 'Segoe UI, Tahoma, sans-serif',
+                          transition: 'all 0.2s',
+                        }}
+                        onFocus={(e) => {
+                          e.currentTarget.style.background = 'rgba(255, 255, 255, 0.22)'
+                          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.4)'
+                        }}
+                        onBlur={(e) => {
+                          e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)'
+                          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.25)'
+                        }}
+                      />
+                      <i className="fas fa-search" style={{ 
+                        position: 'absolute', 
+                        left: '10px', 
+                        fontSize: '12px', 
+                        color: 'rgba(255, 255, 255, 0.5)' 
+                      }}></i>
+                    </div>
+
+                    {/* Shutdown button */}
+                    <button
+                      onClick={() => {
+                        setShowShutdownScreen(true);
+                        setShowFloatingMenu(false);
+                      }}
+                      style={{
+                        padding: '8px 14px',
+                        fontSize: '12px',
+                        fontWeight: 'bold',
+                        background: 'linear-gradient(to bottom, #e05e59 0%, #c9302c 100%)',
+                        border: '1px solid rgba(0, 0, 0, 0.3)',
+                        borderTopColor: 'rgba(255, 255, 255, 0.2)',
+                        color: '#fff',
+                        cursor: 'pointer',
+                        borderRadius: '6px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        boxShadow: '0 2px 4px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
+                        transition: 'all 0.15s',
+                        outline: 'none',
+                        WebkitTapHighlightColor: 'transparent',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = 'linear-gradient(to bottom, #eb7470 0%, #d93d39 100%)'
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = 'linear-gradient(to bottom, #e05e59 0%, #c9302c 100%)'
+                      }}
+                    >
+                      <i className="fas fa-power-off"></i>
+                      <span>Spegni</span>
+                    </button>
+                  </div>
+                </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
         </>
       )}
       
