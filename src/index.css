@@ -4,13 +4,17 @@
   -webkit-tap-highlight-color: transparent !important;
 }
 
-body {
+html, body {
   margin: 0;
   padding: 0;
-  min-height: 100vh;
-  font-family: 'Tahoma', 'Segoe UI', sans-serif;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  position: fixed;
   overflow: hidden;
+  font-family: 'Tahoma', 'Segoe UI', sans-serif;
   user-select: none;
+  -webkit-user-select: none;
   transition: font-size 0.3s ease;
   cursor: url('/portfolio/cursor.png'), auto;
 }
@@ -35,12 +39,16 @@ input[type="email"],
 input[type="password"], 
 textarea {
   cursor: url('/portfolio/cursor.png'), text;
+  user-select: text;
+  -webkit-user-select: text;
 }
 
 #root {
-  width: 100vw;
-  height: 100vh;
-  position: relative;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
   overflow: hidden;
   /* Ottimizzazioni performance - Cross-browser */
   transform: translateZ(0);

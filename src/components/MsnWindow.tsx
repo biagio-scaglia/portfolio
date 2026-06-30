@@ -71,12 +71,12 @@ export default function MsnWindow({ onClose, onMinimize, icon }: MsnWindowProps)
     <Window
       className={isNudging ? 'nudge-shake' : ''}
       title="MSN Messenger"
-      width={windowSize.isMobile ? Math.min(360, window.innerWidth - 20) : 420}
-        height={windowSize.isMobile ? Math.min(550, window.innerHeight - 100) : 600}
-        defaultPosition={{
-          x: windowSize.isMobile ? 10 : window.innerWidth / 2 - 210,
-          y: windowSize.isMobile ? 10 : window.innerHeight / 2 - 300
-        }}
+      width={windowSize.isMobile ? Math.min(380, window.innerWidth - 10) : 420}
+      height={windowSize.isMobile ? Math.min(600, window.innerHeight - 80) : 600}
+      defaultPosition={{
+        x: windowSize.isMobile ? 10 : window.innerWidth / 2 - 210,
+        y: windowSize.isMobile ? 10 : window.innerHeight / 2 - 300
+      }}
         onClose={onClose}
         onMinimize={onMinimize}
         icon={icon}
@@ -209,7 +209,8 @@ export default function MsnWindow({ onClose, onMinimize, icon }: MsnWindowProps)
             padding: '10px',
             display: 'flex',
             flexDirection: 'column',
-            gap: '10px'
+            gap: '10px',
+            flexShrink: 0
           }}>
             <textarea
               value={inputText}
