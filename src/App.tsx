@@ -877,16 +877,18 @@ function App() {
               onSelect={() => setSelectedIcon('calendar')}
               onPositionChange={(x, y) => handleIconPositionChange('calendar', x, y)}
             />
-            <DesktopIcon
-              icon={<img src={msnIcon} alt="MSN Messenger" style={{ width: window.innerWidth <= 480 ? '44px' : window.innerWidth <= 768 ? '50px' : '48px', height: window.innerWidth <= 480 ? '44px' : window.innerWidth <= 768 ? '50px' : '48px', objectFit: 'contain', filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3))' }} />}
-              label="MSN Messenger"
-              onClick={() => toggleWindow('msn')}
-              x={iconPositions.msn?.x || (window.innerWidth <= 480 ? 100 : window.innerWidth <= 768 ? 230 : 690)}
-              y={iconPositions.msn?.y || (window.innerWidth <= 480 ? 660 : window.innerWidth <= 768 ? 480 : 130)}
-              isSelected={selectedIcon === 'msn'}
-              onSelect={() => setSelectedIcon('msn')}
-              onPositionChange={(x, y) => handleIconPositionChange('msn', x, y)}
-            />
+            {windowWidth > 480 && (
+              <DesktopIcon
+                icon={<img src={msnIcon} alt="MSN Messenger" style={{ width: window.innerWidth <= 480 ? '44px' : window.innerWidth <= 768 ? '50px' : '48px', height: window.innerWidth <= 480 ? '44px' : window.innerWidth <= 768 ? '50px' : '48px', objectFit: 'contain', filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3))' }} />}
+                label="MSN Messenger"
+                onClick={() => toggleWindow('msn')}
+                x={iconPositions.msn?.x || (window.innerWidth <= 480 ? 100 : window.innerWidth <= 768 ? 230 : 690)}
+                y={iconPositions.msn?.y || (window.innerWidth <= 480 ? 660 : window.innerWidth <= 768 ? 480 : 130)}
+                isSelected={selectedIcon === 'msn'}
+                onSelect={() => setSelectedIcon('msn')}
+                onPositionChange={(x, y) => handleIconPositionChange('msn', x, y)}
+              />
+            )}
             {openWindows.about && !minimizedWindows.has('about') && (
               <Window
                 title="Presentazione.txt"
@@ -1032,7 +1034,7 @@ function App() {
               </Suspense>
             )}
 
-            {openWindows.msn && !minimizedWindows.has('msn') && (
+             {openWindows.msn && !minimizedWindows.has('msn') && windowWidth > 480 && (
               <Suspense fallback={<LoadingFallback />}>
                 <MsnWindow
                   onClose={() => handleClose('msn')}
