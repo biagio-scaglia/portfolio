@@ -94,6 +94,13 @@ button:hover:not(:active) {
 
 /* Start Button Windows 7 - Cross-browser compatibility */
 .start-button {
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  min-height: 40px !important;
+  max-width: 40px !important;
+  max-height: 40px !important;
+  flex-shrink: 0 !important;
   border-radius: 50% !important;
   border-image: none !important;
   border: none !important;
