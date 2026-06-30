@@ -49,6 +49,7 @@ Portfolio interattivo completamente responsive ottimizzato per desktop, tablet e
 - **Player Musicale**: Lettore audio integrato con playlist e controlli avanzati
 - **Visualizzatore Documenti**: Supporto per PDF e immagini
 - **Browser Integrato**: Navigazione web simulata
+- **MSN Messenger**: Clone interattivo della storica app di messaggistica con invio trilli, suoni originali e UI retrò fedele (ottimizzato anche per mobile)
 - **Paint App**: Applicazione di disegno integrata con strumenti base
 - **Blocco Note**: Editor di testo con salvataggio e invio email
 
