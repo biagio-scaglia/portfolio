@@ -1,6 +1,7 @@
 * {
   box-sizing: border-box;
   cursor: url('/portfolio/cursor.png'), auto;
+  -webkit-tap-highlight-color: transparent !important;
 }
 
 body {
@@ -162,4 +163,21 @@ button, a, .desktop-icon, .window {
       transition-duration: 0.01ms !important;
     }
   }
+}
+
+/* Rimuove l'highlight e il focus ring quadrato da elementi rotondi */
+.circular-btn {
+  border-radius: 50% !important;
+  -webkit-tap-highlight-color: transparent !important;
+  outline: none !important;
+}
+
+.circular-btn:focus,
+.circular-btn:focus-visible {
+  outline: none !important;
+  box-shadow: 0 0 15px rgba(100, 150, 255, 0.8) !important;
+}
+
+.circular-btn:hover {
+  outline: none !important;
 }

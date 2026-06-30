@@ -283,6 +283,7 @@ export default function MusicWindow({ onClose, onMinimize, icon }: MusicWindowPr
         {/* Controlli */}
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '15px' }}>
           <div
+            className="circular-btn"
             tabIndex={currentSongIndex === 0 ? -1 : 0}
             onClick={() => {
               if (currentSongIndex > 0) {
@@ -330,6 +331,7 @@ export default function MusicWindow({ onClose, onMinimize, icon }: MusicWindowPr
           </div>
 
           <div
+            className="circular-btn"
             tabIndex={0}
             onClick={togglePlayPause}
             onKeyDown={(e) => {
@@ -378,6 +380,7 @@ export default function MusicWindow({ onClose, onMinimize, icon }: MusicWindowPr
           </div>
 
           <div
+            className="circular-btn"
             tabIndex={currentSongIndex === PLAYLIST.length - 1 ? -1 : 0}
             onClick={() => {
               if (currentSongIndex < PLAYLIST.length - 1) {

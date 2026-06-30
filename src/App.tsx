@@ -674,7 +674,26 @@ function App() {
             }}
           />
         )}
-        <div style={{ position: 'relative', zIndex: 1, width: '100%', height: '100%' }}>
+        <div style={
+          windowWidth <= 768
+            ? {
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: '10px',
+                padding: '12px 10px',
+                display: 'flex',
+                flexDirection: 'column',
+                flexWrap: 'wrap',
+                alignContent: 'flex-start',
+                justifyContent: 'flex-start',
+                gap: '8px 10px',
+                overflow: 'hidden',
+                zIndex: 1,
+              }
+            : { position: 'relative', zIndex: 1, width: '100%', height: '100%' }
+        }>
       {/* Desktop Icons */}
       <DesktopIcon
         icon={<img src={infoIcon} alt="Presentazione" style={{ width: window.innerWidth <= 480 ? '44px' : window.innerWidth <= 768 ? '50px' : '48px', height: window.innerWidth <= 480 ? '44px' : window.innerWidth <= 768 ? '50px' : '48px', objectFit: 'contain', filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3))' }} />}
@@ -1077,7 +1096,7 @@ function App() {
       >
         {/* Start Button Windows 7 - Circolare */}
         <div
-          className="start-button"
+          className="start-button circular-btn"
           tabIndex={0}
           onClick={() => setShowStartMenu(!showStartMenu)}
           onKeyDown={(e) => {
@@ -1947,6 +1966,7 @@ function App() {
       {windowWidth <= 768 && (
         <>
           <div
+            className="circular-btn"
             tabIndex={0}
             onClick={() => setShowFloatingMenu(!showFloatingMenu)}
             onKeyDown={(e) => {

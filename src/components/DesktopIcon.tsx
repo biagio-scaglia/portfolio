@@ -115,10 +115,10 @@ const DesktopIcon = memo(function DesktopIcon({ icon, label, onClick, x = 0, y =
       ref={iconRef}
       className="desktop-icon"
       style={{
-        position: 'absolute',
-        left: `${position.x}px`,
-        top: `${position.y}px`,
-        width: '90px',
+        position: windowSize.isMobile || windowSize.isTablet ? 'relative' : 'absolute',
+        left: windowSize.isMobile || windowSize.isTablet ? undefined : `${position.x}px`,
+        top: windowSize.isMobile || windowSize.isTablet ? undefined : `${position.y}px`,
+        width: windowSize.isMobile ? '75px' : '90px',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
