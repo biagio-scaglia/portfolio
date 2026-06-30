@@ -1,1 +1,0 @@
-var e=`/assets/img13-BR5-CTWT.jpg`;export{e as default};
