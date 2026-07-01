@@ -28,7 +28,6 @@ import cestinoIcon from './assets/icone/cestino.png'
 import antivirusIcon from './assets/icone/antivirus.png'
 import calendarIcon from './assets/icone/calendar.png'
 import msnIcon from './assets/icone/msn.png'
-import bootupSoundFile from './assets/sound/bootup.mp3'
 import shutdownSoundFile from './assets/sound/windows-7-shutdown.mp3'
 import clickSoundFile from './assets/sound/windows-7-click.wav'
 import defaultBackground from './assets/sfondo.jpg'
@@ -368,10 +367,7 @@ function App() {
     setUserName(name)
     setShowBootScreen(false)
 
-    const bootSound = new Audio(bootupSoundFile)
-    bootSound.play().catch(e => console.log('Autoplay prevented:', e))
-
-    // Piccolo delay per assicurarsi che il suono parta
+    // Piccolo delay per assicurarsi che la transizione sia fluida
     setTimeout(() => {
       setShowWelcomeModal(true)
     }, 200)

@@ -373,25 +373,7 @@ export default function StartMenu({ isOpen, onClose, onOpenWindow, onShutdown }:
             onShutdown()
             onClose()
           }}
-          style={{
-            padding: '6px 12px',
-            fontSize: '12px',
-            background: 'linear-gradient(to bottom, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%)',
-            border: '1px solid rgba(255, 255, 255, 0.3)',
-            color: '#fff',
-            cursor: 'pointer',
-            borderRadius: '2px',
-            transition: 'all 0.15s',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.2) 100%)'
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = 'linear-gradient(to bottom, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%)'
-          }}
+          className="start-menu-shutdown-btn"
         >
           <i className="fas fa-power-off" style={{ fontSize: '14px' }}></i>
           <span>Spegni</span>

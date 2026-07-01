@@ -3,19 +3,41 @@ import { Howl } from 'howler'
 import bootupSound from '../assets/sound/bootup.mp3'
 import bootBackground from '../assets/sfondo-avvio.jpeg'
 import Windows7Spinner from './Windows7Spinner'
-import bsLogo from '../assets/BS.png'
+import userIcon from '../assets/icone/user.png'
 
 interface BootScreenProps {
   onComplete: (userName: string) => void
 }
 
 export default function BootScreen({ onComplete }: BootScreenProps) {
+  const [bootStage, setBootStage] = useState<'cmd' | 'gui' | 'logon' | 'welcome'>('cmd')
+  const [cmdLinesCount, setCmdLinesCount] = useState(0)
   const [progress, setProgress] = useState(0)
   const soundRef = useRef<Howl | null>(null)
-  const [isComplete, setIsComplete] = useState(false)
   const [userName, setUserName] = useState('')
-  const [showWelcome, setShowWelcome] = useState(false)
 
+  const cmdLines = [
+    'Starting Portfolio OS Boot Loader...',
+    'Copyright (C) 2026 Biagio Scaglia. All Rights Reserved.',
+    '',
+    'Detecting hardware components...',
+    'Processor: Intel Core i7-4770K @ 3.50GHz',
+    'Memory: 16384 MB RAM (DDR3 Dual Channel) - PASS',
+    'Storage: SSD SATA3 512GB - HEALTHY (100%)',
+    'GPU: NVIDIA GeForce GTX 760 - Aero Mode Supported',
+    '',
+    'Loading virtual filesystem...',
+    '[  OK  ] Loading PORTFOLIO.SYS',
+    '[  OK  ] Starting WindowManager.exe',
+    '[  OK  ] Launching Explorer7.exe',
+    '[  OK  ] Initializing Audio Engine (Howler.js)',
+    '[  OK  ] Loading system libraries: React.js, Vite',
+    '[  OK  ] Mounting virtual directory C:\\Users\\biagio.scaglia',
+    '',
+    'Boot sequence completed. Redirecting to Logon GUI...'
+  ]
+
+  // Inizializza l'audio con Howler
   useEffect(() => {
     const sound = new Howl({
       src: [bootupSound],
@@ -23,7 +45,6 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
       preload: true,
       html5: false,
     })
-    
     soundRef.current = sound
 
     return () => {
@@ -34,9 +55,32 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
     }
   }, [])
 
-  // Gestione progresso della barra di avvio
+  // Fase 1: Simulazione Stampa Righe CMD Terminale
   useEffect(() => {
-    const duration = 3000 // 3 secondi per apprezzare l'animazione di avvio
+    if (bootStage !== 'cmd') return
+
+    const lineInterval = setInterval(() => {
+      setCmdLinesCount((prev) => {
+        const next = prev + 1
+        if (next >= cmdLines.length) {
+          clearInterval(lineInterval)
+          setTimeout(() => {
+            setBootStage('gui')
+          }, 450)
+          return cmdLines.length
+        }
+        return next
+      })
+    }, 70) // stampa veloce riga per riga
+
+    return () => clearInterval(lineInterval)
+  }, [bootStage, cmdLines.length])
+
+  // Fase 2: Avanzamento barra di progresso GUI
+  useEffect(() => {
+    if (bootStage !== 'gui') return
+
+    const duration = 2800 // 2.8 secondi per l'animazione dell'orb
     const interval = 50
     const increment = 100 / (duration / interval)
 
@@ -45,36 +89,33 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
         const newProgress = prev + increment
         if (newProgress >= 100) {
           clearInterval(progressInterval)
-          setProgress(100)
-          setIsComplete(true)
+          setBootStage('logon')
           return 100
         }
         return newProgress
       })
     }, interval)
 
-    return () => {
-      clearInterval(progressInterval)
-    }
-  }, [])
+    return () => clearInterval(progressInterval)
+  }, [bootStage])
 
-  // Esegui l'accesso quando l'utente conferma il nome
+  // Esegui l'accesso quando l'utente immette il nome
   const handleLogin = () => {
     const finalName = userName.trim() || 'Ospite'
-    setShowWelcome(true)
+    setBootStage('welcome')
 
-    // Avvia il suono di logon di Windows 7
+    // Avvia l'audio del logon una sola volta
     if (soundRef.current) {
       try {
         soundRef.current.stop()
         soundRef.current.seek(0)
         soundRef.current.play()
       } catch (err) {
-        console.log('Errore audio logon:', err)
+        console.log('Errore riproduzione audio logon:', err)
       }
     }
 
-    // Passa alla dashboard dopo 2.5 secondi (fine della traccia sonora)
+    // Carica il Desktop al termine della traccia (2.5 secondi)
     setTimeout(() => {
       onComplete(finalName)
     }, 2500)
@@ -90,12 +131,12 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
         bottom: 0,
         backgroundColor: '#000000',
         zIndex: 20000,
-        fontFamily: 'Segoe UI, Tahoma, sans-serif',
+        fontFamily: 'Consolas, Monaco, monospace, Segoe UI',
         overflow: 'hidden',
         userSelect: 'none'
       }}
     >
-      {/* Iniezione Stili CSS Animazione Boot e Pulsanti */}
+      {/* Iniezione Stili CSS per Animazione Orb e Logon */}
       <style dangerouslySetInnerHTML={{__html: `
         @keyframes orb-rotate {
           0% { transform: rotate(0deg); }
@@ -103,7 +144,7 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
         }
         @keyframes orb-pulse {
           0%, 100% { transform: scale(1); opacity: 0.8; }
-          50% { transform: scale(1.15); opacity: 1; filter: drop-shadow(0 0 15px rgba(255,255,255,0.8)); }
+          50% { transform: scale(1.1); opacity: 1; filter: drop-shadow(0 0 15px rgba(255,255,255,0.7)); }
         }
         .boot-orb-container {
           position: relative;
@@ -124,24 +165,84 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
         .orb-yellow { background: #ffff4b; top: 33px; right: 12px; box-shadow: 0 0 10px #ffff4b; }
         
         .logo-pulse {
-          animation: orb-pulse 2s ease-in-out infinite;
+          animation: orb-pulse 2.5s ease-in-out infinite;
         }
         
         .logon-input::placeholder {
-          color: #a0aec0;
+          color: #718096;
           font-style: italic;
+        }
+        
+        .logon-input-wrapper {
+          border: 1px solid #7f9db9;
+          transition: all 0.2s ease;
+          background: #fff;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.2) inset;
+        }
+        .logon-input-wrapper:hover, .logon-input-wrapper:focus-within {
+          border-color: #3182ce !important;
+          box-shadow: 0 0 8px rgba(66, 153, 225, 0.8), 0 1px 3px rgba(0,0,0,0.1) inset !important;
+        }
+        
+        .blue-arrow-btn {
+          width: 28px;
+          height: 28px;
+          border-radius: 50%;
+          background: linear-gradient(to bottom, #a0c0e0 0%, #3a75a7 50%, #21598a 100%) !important;
+          border: 1px solid #1d4b75 !important;
+          color: #fff !important;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justifyContent: center;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.3) !important;
+          transition: all 0.15s ease !important;
+          margin: 0 !important;
+          padding: 0 !important;
+        }
+        .blue-arrow-btn:hover {
+          background: linear-gradient(to bottom, #5d93c4 0%, #2e6290 50%, #173d61 100%) !important;
+          border-color: #153a5c !important;
+          box-shadow: 0 0 8px rgba(66, 153, 225, 0.8), 0 1px 3px rgba(0,0,0,0.3) !important;
+        }
+        .blue-arrow-btn:active {
+          background: linear-gradient(to bottom, #173d61 0%, #2e6290 100%) !important;
+          border-color: #112d47 !important;
+          box-shadow: inset 0 1px 3px rgba(0,0,0,0.5) !important;
         }
       `}} />
 
-      {/* 1. SCHERMATA DI AVVIO NATIVA (Boot Loader) */}
-      {!isComplete && (
+      {/* STAGE 1: SIMULAZIONE TERMINALE CMD */}
+      {bootStage === 'cmd' && (
+        <div style={{
+          padding: '20px',
+          color: '#ffffff',
+          fontSize: '13px',
+          lineHeight: '1.6',
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'flex-start',
+          textAlign: 'left'
+        }}>
+          {cmdLines.slice(0, cmdLinesCount).map((line, idx) => (
+            <div key={idx}>{line}</div>
+          ))}
+          {/* Cursore lampeggiante in basso */}
+          <div style={{ display: 'inline-block', width: '8px', height: '15px', background: '#fff', marginLeft: '2px', animation: 'orb-pulse 1s steps(2) infinite' }} />
+        </div>
+      )}
+
+      {/* STAGE 2: SCHERMATA GUI CARICAMENTO (Windows 7 Boot Loader) */}
+      {bootStage === 'gui' && (
         <div style={{
           height: '100%',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: '40px'
+          gap: '40px',
+          fontFamily: 'Segoe UI, Tahoma, sans-serif'
         }}>
           {/* Orb animate di avvio di Windows 7 */}
           <div className="logo-pulse" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -156,7 +257,7 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
             </div>
           </div>
 
-          {/* Barra di progresso sottile */}
+          {/* Barra di progresso */}
           <div style={{ width: '220px', height: '6px', background: '#222', borderRadius: '3px', overflow: 'hidden', border: '1px solid #444' }}>
             <div style={{
               width: `${progress}%`,
@@ -173,8 +274,8 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
         </div>
       )}
 
-      {/* 2. SCHERMATA DI LOGON / BENVENUTO (Logon Screen) */}
-      {isComplete && (
+      {/* STAGE 3 & 4: LOGON / BENVENUTO (Windows 7 Logon Screen) */}
+      {(bootStage === 'logon' || bootStage === 'welcome') && (
         <div
           style={{
             height: '100%',
@@ -185,21 +286,22 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
             flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            position: 'relative'
+            position: 'relative',
+            fontFamily: 'Segoe UI, Tahoma, sans-serif'
           }}
         >
-          {/* Overlay di vetro e luce */}
+          {/* Glass Overlay per contrasto visivo */}
           <div style={{
             position: 'absolute',
             top: 0,
             left: 0,
             right: 0,
             bottom: 0,
-            background: 'radial-gradient(circle, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.4) 100%)',
+            background: 'radial-gradient(circle, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.35) 100%)',
             zIndex: 1
           }} />
 
-          {/* Card Centrale di Logon */}
+          {/* Logon Panel */}
           <div style={{
             position: 'relative',
             zIndex: 2,
@@ -209,25 +311,34 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
             width: '280px'
           }}>
             
-            {/* Foto Profilo Utente */}
+            {/* Foto Profilo Utente (Omino Generico di Windows) */}
             <div style={{
-              width: '96px',
-              height: '96px',
+              width: '90px',
+              height: '90px',
               borderRadius: '8px',
               border: '3px solid rgba(255,255,255,0.7)',
-              boxShadow: '0 10px 25px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2)',
+              boxShadow: '0 8px 20px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.2)',
               overflow: 'hidden',
-              background: 'rgba(255,255,255,0.1)',
-              marginBottom: '20px',
+              background: 'linear-gradient(135deg, #e2e8f0 0%, #cbd5e0 100%)',
+              marginBottom: '18px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center'
             }}>
-              <img src={bsLogo} alt="User Avatar" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+              <img 
+                src={userIcon} 
+                alt="Logon Avatar" 
+                style={{ 
+                  width: '75%', 
+                  height: '75%', 
+                  objectFit: 'contain',
+                  filter: 'drop-shadow(0 2px 3px rgba(0,0,0,0.15))'
+                }} 
+              />
             </div>
 
             {/* Nome utente / Stato di Welcome */}
-            {!showWelcome ? (
+            {bootStage === 'logon' ? (
               <>
                 <div style={{
                   color: '#fff',
@@ -240,17 +351,19 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
                 </div>
 
                 {/* Password Input Box (Simulata per il Nome Utente) */}
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  width: '100%',
-                  background: '#fff',
-                  border: '1px solid #7f9db9',
-                  borderRadius: '4px',
-                  boxShadow: '0 1px 3px rgba(0,0,0,0.2) inset, 0 1px 0 rgba(255,255,255,0.2)',
-                  padding: '2px',
-                  boxSizing: 'border-box'
-                }}>
+                <div 
+                  className="logon-input-wrapper"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    width: '100%',
+                    borderRadius: '4px',
+                    padding: '2px',
+                    boxSizing: 'border-box',
+                    gap: '6px',
+                    background: '#ffffff'
+                  }}
+                >
                   <input
                     type="text"
                     value={userName}
@@ -270,35 +383,22 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
                       background: 'transparent',
                       padding: '6px 10px',
                       fontSize: '13px',
-                      color: '#333',
+                      color: '#2d3748',
+                      fontWeight: '500',
                       fontFamily: 'Segoe UI, Tahoma, sans-serif'
                     }}
                   />
-                  {/* Pulsante freccia blu login */}
+                  
+                  {/* Pulsante circolare freccia blu login */}
                   <button
                     onClick={handleLogin}
-                    style={{
-                      width: '24px',
-                      height: '24px',
-                      borderRadius: '4px',
-                      background: 'linear-gradient(to bottom, #a0c0e0 0%, #3a75a7 50%, #21598a 100%)',
-                      border: '1px solid #1d4b75',
-                      color: '#fff',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      boxShadow: '0 1px 2px rgba(0,0,0,0.3)',
-                      transition: 'all 0.1s'
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, #b8d2ec 0%, #4686be 50%, #2c6da3 100%)'}
-                    onMouseLeave={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, #a0c0e0 0%, #3a75a7 50%, #21598a 100%)'}
+                    className="blue-arrow-btn"
                   >
-                    <i className="fas fa-arrow-right" style={{ fontSize: '10px' }}></i>
+                    <i className="fas fa-arrow-right" style={{ fontSize: '11px' }}></i>
                   </button>
                 </div>
                 
-                <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: '11px', marginTop: '10px', textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>
+                <div style={{ color: 'rgba(255,255,255,0.75)', fontSize: '11px', marginTop: '12px', textShadow: '0 1px 2px rgba(0,0,0,0.6)' }}>
                   Premi Invio per accedere
                 </div>
               </>
@@ -318,7 +418,7 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
                   <Windows7Spinner size={24} />
                 </div>
                 <div style={{
-                  color: 'rgba(255,255,255,0.8)',
+                  color: 'rgba(255,255,255,0.85)',
                   fontSize: '13px',
                   fontWeight: '500',
                   textShadow: '0 1px 2px rgba(0,0,0,0.5)'
@@ -333,7 +433,7 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
           {/* Footer Logon Screen */}
           <div style={{
             position: 'absolute',
-            bottom: '30px',
+            bottom: '35px',
             zIndex: 2,
             textAlign: 'center',
             color: '#fff',
@@ -343,7 +443,7 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
             <div style={{ fontSize: '18px', fontWeight: 'bold', fontStyle: 'italic', letterSpacing: '0.5px' }}>
               Windows 7
             </div>
-            <div style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '2px', opacity: 0.7 }}>
+            <div style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '2px', opacity: 0.75 }}>
               Professional
             </div>
           </div>
