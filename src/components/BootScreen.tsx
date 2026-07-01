@@ -10,18 +10,23 @@ interface BootScreenProps {
 }
 
 export default function BootScreen({ onComplete }: BootScreenProps) {
-  const [bootStage, setBootStage] = useState<'cmd' | 'gui' | 'logon' | 'welcome'>('cmd')
+  const [bootStage, setBootStage] = useState<'cmd' | 'bios' | 'gui' | 'logon' | 'welcome'>('cmd')
+  
+  // Stati per il CMD e CHKDSK
   const [renderedLines, setRenderedLines] = useState<string[]>([])
   const [showPrompt, setShowPrompt] = useState(false)
+  const [showBiosPrompt, setShowBiosPrompt] = useState(true)
+  const [biosCountdown, setBiosCountdown] = useState(2.0)
+  
+  // Orario BIOS in tempo reale
+  const [biosTime, setBiosTime] = useState(new Date())
+
   const [progress, setProgress] = useState(0)
   const [userName, setUserName] = useState('')
   const soundRef = useRef<Howl | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
   const initialLines = [
-    'Starting Portfolio OS Boot Loader...',
-    'Copyright (C) 2026 Biagio Scaglia. All Rights Reserved.',
-    '',
     'Detecting hardware components...',
     'Processor: Intel Core i7-4770K @ 3.50GHz',
     'Memory: 16384 MB RAM (DDR3 Dual Channel) - PASS',
@@ -80,17 +85,71 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
     }
   }, [])
 
-  // Auto-scroll del terminale alla stampa delle righe
+  // Aggiorna l'orario del BIOS in tempo reale
+  useEffect(() => {
+    if (bootStage !== 'bios') return
+    const timer = setInterval(() => {
+      setBiosTime(new Date())
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [bootStage])
+
+  // Auto-scroll del terminale CMD
   useEffect(() => {
     if (containerRef.current) {
       containerRef.current.scrollTop = containerRef.current.scrollHeight
     }
-  }, [renderedLines, showPrompt])
+  }, [renderedLines, showPrompt, showBiosPrompt])
 
-  // Fase 1: Stampa sequenziale righe iniziali del CMD
+  // Conto alla rovescia per entrare nel BIOS
   useEffect(() => {
-    if (bootStage !== 'cmd') return
+    if (bootStage !== 'cmd' || !showBiosPrompt) return
 
+    const cTimer = setInterval(() => {
+      setBiosCountdown((prev) => {
+        const next = parseFloat((prev - 0.1).toFixed(1))
+        if (next <= 0) {
+          clearInterval(cTimer)
+          setShowBiosPrompt(false)
+          startCmdSequence()
+          return 0
+        }
+        return next
+      })
+    }, 100)
+
+    return () => clearInterval(cTimer)
+  }, [bootStage, showBiosPrompt])
+
+  useEffect(() => {
+    const handleGlobalKeys = (e: KeyboardEvent) => {
+      if (bootStage === 'cmd' && showBiosPrompt) {
+        if (e.key === 'F2' || e.key === 'Delete') {
+          enterBios()
+        }
+      } else if (bootStage === 'bios') {
+        if (e.key === 'Escape') {
+          exitBios()
+        }
+      }
+    }
+    window.addEventListener('keydown', handleGlobalKeys)
+    return () => window.removeEventListener('keydown', handleGlobalKeys)
+  }, [bootStage, showBiosPrompt])
+
+  const enterBios = () => {
+    setShowBiosPrompt(false)
+    setBootStage('bios')
+  }
+
+  const exitBios = () => {
+    setBootStage('cmd')
+    startCmdSequence()
+  }
+
+  // Stampa sequenziale righe iniziali del CMD
+  const startCmdSequence = () => {
+    setRenderedLines(['Starting Portfolio OS Boot Loader...', 'Copyright (C) 2026 Biagio Scaglia. All Rights Reserved.', ''])
     let currentIdx = 0
     const printInterval = setInterval(() => {
       if (currentIdx < initialLines.length) {
@@ -100,17 +159,14 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
         clearInterval(printInterval)
         setShowPrompt(true)
       }
-    }, 60)
+    }, 55)
+  }
 
-    return () => clearInterval(printInterval)
-  }, [bootStage])
-
-  // Gestione Input Scelta Utente (Y/N)
+  // Gestione Input Scelta Utente CHKDSK (Y/N)
   const handleChoice = (choice: 'Y' | 'N') => {
     if (!showPrompt) return
     setShowPrompt(false)
 
-    // Aggiunge la risposta sulla stessa riga del prompt
     setRenderedLines((prev) => {
       const copy = [...prev]
       if (copy.length > 0) {
@@ -119,7 +175,6 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
       return copy
     })
 
-    // Esegui sequenza in base alla scelta
     const targetLines = choice === 'Y' ? scanLines : skipLines
     let idx = 0
 
@@ -129,13 +184,12 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
         idx++
       } else {
         clearInterval(nextPrintInterval)
-        // Pausa prima di passare all'animazione della GUI
         setTimeout(() => {
           setBootStage('gui')
         }, 750)
       }
-    }, 50)
-  };
+    }, 45)
+  }
 
   // Listeners tastiera per avvio CMD
   useEffect(() => {
@@ -143,9 +197,9 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
 
     const handleKeyDown = (e: KeyboardEvent) => {
       const key = e.key.toUpperCase()
-      if (key === 'Y' || key === 'S') { // Y o S (Sì)
+      if (key === 'Y' || key === 'S') {
         handleChoice('Y')
-      } else if (key === 'N' || key === 'O') { // N o O (No)
+      } else if (key === 'N' || key === 'O') {
         handleChoice('N')
       }
     }
@@ -158,7 +212,7 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
   useEffect(() => {
     if (bootStage !== 'gui') return
 
-    const duration = 2800 // 2.8 secondi
+    const duration = 2800
     const interval = 50
     const increment = 100 / (duration / interval)
 
@@ -294,7 +348,7 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
           height: 100%;
           display: flex;
           flex-direction: column;
-          justifyContent: flex-start;
+          justify-content: flex-start;
           text-align: left;
           box-sizing: border-box;
           overflow-y: auto;
@@ -316,6 +370,36 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
           border-color: #fff;
         }
 
+        /* Bios Layout */
+        .bios-container {
+          background-color: #0000aa;
+          color: #ffffff;
+          font-family: monospace;
+          height: 100%;
+          width: 100%;
+          padding: 10px;
+          box-sizing: border-box;
+          display: flex;
+          flex-direction: column;
+        }
+        .bios-border {
+          border: 4px double #ffffff;
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          padding: 10px;
+          box-sizing: border-box;
+          overflow-y: auto;
+        }
+        .bios-header {
+          background: #aaaaaa;
+          color: #0000aa;
+          text-align: center;
+          font-weight: bold;
+          padding: 2px 0;
+          margin-bottom: 12px;
+        }
+
         @media (max-width: 480px) {
           .cmd-terminal {
             padding: 12px;
@@ -327,13 +411,43 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
             width: 100%;
             text-align: center;
           }
+          .bios-container {
+            padding: 4px;
+          }
+          .bios-border {
+            padding: 6px;
+            border-width: 2px;
+          }
+          .bios-header {
+            font-size: 11px;
+          }
         }
       `}} />
 
       {/* STAGE 1: SIMULAZIONE TERMINALE CMD */}
       {bootStage === 'cmd' && (
         <div ref={containerRef} className="cmd-terminal">
-          {renderedLines.map((line, idx) => (
+          {/* Prompt d'ingresso BIOS */}
+          {showBiosPrompt && (
+            <div style={{ marginBottom: '20px' }}>
+              <div>Starting Portfolio OS Boot Loader...</div>
+              <div style={{ color: '#00ff00', marginTop: '10px' }}>
+                Premi [ F2 ] o [ CANC ] per entrare nel BIOS Setup Utility ({biosCountdown}s)
+              </div>
+              <div style={{ display: 'flex', gap: '10px', marginTop: '12px' }}>
+                <div 
+                  onClick={enterBios}
+                  className="chkdsk-btn"
+                  style={{ borderColor: '#00ff00', color: '#00ff00' }}
+                >
+                  &gt; [ F2 ] Entra nel BIOS Setup
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Righe del terminale */}
+          {!showBiosPrompt && renderedLines.map((line, idx) => (
             <div key={idx} style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>{line}</div>
           ))}
 
@@ -362,14 +476,94 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
             </div>
           )}
 
-          {/* Cursore lampeggiante in basso (nascosto se c'è il prompt) */}
-          {!showPrompt && (
+          {/* Cursore lampeggiante */}
+          {!showPrompt && !showBiosPrompt && (
             <div style={{ display: 'inline-block', width: '8px', height: '14px', background: '#fff', marginLeft: '2px', animation: 'orb-pulse 1s steps(2) infinite' }} />
           )}
         </div>
       )}
 
-      {/* STAGE 2: SCHERMATA GUI CARICAMENTO (Windows 7 Boot Loader) */}
+      {/* STAGE 2: SCHERMATA RETRO BIOS SETUP */}
+      {bootStage === 'bios' && (
+        <div className="bios-container">
+          <div className="bios-border">
+            <div className="bios-header">
+              APTIO SETUP UTILITY - COPYRIGHT (C) 2026 BIAGIO SCAGLIA
+            </div>
+            
+            <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #fff', paddingBottom: '4px', fontSize: '12px', marginBottom: '15px' }}>
+              <span>Main</span>
+              <span>Advanced</span>
+              <span>Security</span>
+              <span>Boot</span>
+              <span>Exit</span>
+            </div>
+
+            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '13px' }}>
+              <div style={{ color: '#ffff55', fontWeight: 'bold', marginBottom: '4px' }}>System Information:</div>
+              
+              <div style={{ display: 'flex', justifyContent: 'space-between', maxWidth: '400px' }}>
+                <span>System Time:</span>
+                <span style={{ color: '#55ffff' }}>{biosTime.toLocaleTimeString()}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', maxWidth: '400px' }}>
+                <span>System Date:</span>
+                <span style={{ color: '#55ffff' }}>{biosTime.toLocaleDateString('it-IT')}</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', maxWidth: '400px' }}>
+                <span>BIOS Version:</span>
+                <span>BS-7.04.26 (Aero)</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', maxWidth: '400px' }}>
+                <span>CPU Type:</span>
+                <span>Intel Core i7-4770K @ 3.50GHz</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', maxWidth: '400px' }}>
+                <span>System Memory:</span>
+                <span>16384 MB (DDR3 Dual Channel)</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', maxWidth: '400px' }}>
+                <span>SATA Port 1:</span>
+                <span>SSD SATA3 512GB (Healthy)</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', maxWidth: '400px' }}>
+                <span>Current OS:</span>
+                <span style={{ color: '#55ff55' }}>Portfolio OS v1.0 (Windows 7 Mode)</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', maxWidth: '400px' }}>
+                <span>Owner/Developer:</span>
+                <span>Biagio Scaglia</span>
+              </div>
+            </div>
+
+            {/* Menu di Aiuto e Tasto di Uscita */}
+            <div style={{ borderTop: '1px solid #fff', paddingTop: '10px', fontSize: '11px', marginTop: '15px' }}>
+              <div style={{ color: '#ffff55', marginBottom: '8px' }}>
+                F1: Help | Esc: Exit Setup & Save | F10: Save & Exit
+              </div>
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <div 
+                  onClick={exitBios}
+                  className="chkdsk-btn"
+                  style={{
+                    background: '#ff5555',
+                    borderColor: '#ff5555',
+                    color: '#fff',
+                    fontWeight: 'bold',
+                    width: '100%',
+                    textAlign: 'center'
+                  }}
+                >
+                  &gt; [ ESC ] Esci e Salva Modifiche (Avvia Sistema)
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* STAGE 3: SCHERMATA GUI CARICAMENTO (Windows 7 Boot Loader) */}
       {bootStage === 'gui' && (
         <div style={{
           height: '100%',
@@ -408,7 +602,7 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
         </div>
       )}
 
-      {/* STAGE 3 & 4: LOGON / BENVENUTO (Windows 7 Logon Screen) */}
+      {/* STAGE 4 & 5: LOGON / BENVENUTO (Windows 7 Logon Screen) */}
       {(bootStage === 'logon' || bootStage === 'welcome') && (
         <div
           style={{
