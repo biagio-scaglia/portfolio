@@ -30,6 +30,7 @@ import calendarIcon from './assets/icone/calendar.png'
 import msnIcon from './assets/icone/msn.png'
 import bootupSoundFile from './assets/sound/bootup.mp3'
 import shutdownSoundFile from './assets/sound/windows-7-shutdown.mp3'
+import clickSoundFile from './assets/sound/windows-7-click.wav'
 import defaultBackground from './assets/sfondo.jpg'
 import './App.css'
 
@@ -281,6 +282,14 @@ function App() {
   }, [])
 
   const toggleWindow = useCallback((window: keyof typeof openWindows) => {
+    try {
+      const clickAudio = new Audio(clickSoundFile)
+      clickAudio.volume = 0.3
+      clickAudio.play().catch(e => console.log('Click sound prevented:', e))
+    } catch (err) {
+      console.log('Error playing click sound:', err)
+    }
+
     setOpenWindows((prev) => {
       const isOpen = prev[window]
       // Se la finestra è minimizzata e viene cliccata, riaprila
@@ -311,6 +320,14 @@ function App() {
   }, [])
 
   const handleTaskbarClick = useCallback((window: keyof typeof openWindows) => {
+    try {
+      const clickAudio = new Audio(clickSoundFile)
+      clickAudio.volume = 0.3
+      clickAudio.play().catch(e => console.log('Click sound prevented:', e))
+    } catch (err) {
+      console.log('Error playing click sound:', err)
+    }
+
     // Se la finestra è minimizzata, riaprila
     if (minimizedWindows.has(window)) {
       setMinimizedWindows((prevMin) => {

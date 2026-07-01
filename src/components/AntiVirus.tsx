@@ -81,6 +81,16 @@ export default function AntiVirus({ onClose, onMinimize, icon }: AntiVirusProps)
     setIsProtected(foundThreats.length === 0)
     setLastScan(new Date())
     setIsScanning(false)
+
+    if (foundThreats.length > 0) {
+      try {
+        const errorAudio = new Audio(new URL('../assets/sound/windows-7-error.wav', import.meta.url).href)
+        errorAudio.volume = 0.4
+        errorAudio.play().catch(e => console.log('Error sound prevented:', e))
+      } catch (err) {
+        console.log('Error playing error sound:', err)
+      }
+    }
   }
 
   const handleQuarantine = () => {

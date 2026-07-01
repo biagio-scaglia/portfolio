@@ -109,6 +109,13 @@ export default function Cestino({ onClose, onMinimize, icon }: CestinoProps) {
   const handleEmptyTrash = () => {
     if (confirm('Vuoi svuotare il cestino? Tutti i file verranno eliminati definitivamente.')) {
       setFiles([])
+      try {
+        const recycleAudio = new Audio(new URL('../assets/sound/windows-7-recycle.wav', import.meta.url).href)
+        recycleAudio.volume = 0.5
+        recycleAudio.play().catch(e => console.log('Recycle sound prevented:', e))
+      } catch (err) {
+        console.log('Error playing recycle sound:', err)
+      }
     }
   }
 
