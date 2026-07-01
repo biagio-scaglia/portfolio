@@ -390,12 +390,12 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
                   />
                   
                   {/* Pulsante circolare freccia blu login */}
-                  <button
+                  <div
                     onClick={handleLogin}
                     className="blue-arrow-btn"
                   >
-                    <i className="fas fa-arrow-right" style={{ fontSize: '11px' }}></i>
-                  </button>
+                    <i className="fas fa-arrow-right" style={{ fontSize: '11px', color: '#fff' }}></i>
+                  </div>
                 </div>
                 
                 <div style={{ color: 'rgba(255,255,255,0.75)', fontSize: '11px', marginTop: '12px', textShadow: '0 1px 2px rgba(0,0,0,0.6)' }}>
