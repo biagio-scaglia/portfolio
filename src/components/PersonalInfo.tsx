@@ -25,23 +25,9 @@ export default function PersonalInfo() {
   ]
 
   return (
-    <div style={{ display: 'flex', flexDirection: window.innerWidth <= 550 ? 'column' : 'row', gap: '20px', padding: '15px', fontFamily: 'Segoe UI, Tahoma, sans-serif' }}>
+    <div className="personal-info-container">
       {/* Profilo Avatar Card (Stile Account Windows 7) */}
-      <div style={{
-        flex: '0 0 160px',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        background: '#fff',
-        border: '1px solid #cbd5e0',
-        borderRadius: '8px',
-        padding: '15px',
-        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)',
-        textAlign: 'center',
-        alignSelf: 'flex-start',
-        width: window.innerWidth <= 550 ? '100%' : 'auto',
-        boxSizing: 'border-box'
-      }}>
+      <div className="personal-info-avatar-card">
         {/* Cornice lucida stile Windows 7 */}
         <div style={{
           width: '90px',
@@ -134,8 +120,9 @@ export default function PersonalInfo() {
                 border: '1px solid #e2e8f0',
                 borderRadius: '6px',
                 transition: 'all 0.15s ease',
+                gap: '10px'
               }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', minWidth: 0, flex: 1 }}>
                   <div style={{
                     width: '30px',
                     height: '30px',
@@ -145,23 +132,25 @@ export default function PersonalInfo() {
                     alignItems: 'center',
                     justifyContent: 'center',
                     color: item.color,
-                    fontSize: '14px'
+                    fontSize: '14px',
+                    flexShrink: 0
                   }}>
                     <i className={item.isBrand ? `fab ${item.icon}` : `fas ${item.icon}`}></i>
                   </div>
-                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
                     <span style={{ fontSize: '10px', color: '#718096', fontWeight: '600' }}>{item.label}</span>
                     <a href={item.link} target="_blank" rel="noopener noreferrer" style={{
                       fontSize: '13px',
                       color: '#2d3748',
                       fontWeight: 'bold',
                       textDecoration: 'none',
+                      wordBreak: 'break-all'
                     }} onMouseEnter={(e) => e.currentTarget.style.color = '#3182ce'} onMouseLeave={(e) => e.currentTarget.style.color = '#2d3748'}>
                       {item.value}
                     </a>
                   </div>
                 </div>
-                <div style={{ position: 'relative', display: 'flex', gap: '5px' }}>
+                <div style={{ position: 'relative', display: 'flex', gap: '5px', flexShrink: 0 }}>
                   {copiedText === item.label && (
                     <span style={{
                       position: 'absolute',

@@ -602,3 +602,37 @@ button:hover:not(:active) {
   border-color: rgba(255, 255, 255, 0.5) !important;
   box-shadow: 0 0 8px rgba(100, 150, 255, 0.35) !important;
 }
+
+/* PersonalInfo - Responsive styles */
+.personal-info-container {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  padding: 15px;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+}
+
+.personal-info-avatar-card {
+  flex: 0 0 160px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #fff;
+  border: 1px solid #cbd5e0;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  text-align: center;
+  align-self: flex-start;
+  box-sizing: border-box;
+}
+
+@media (max-width: 550px) {
+  .personal-info-container {
+    flex-direction: column !important;
+  }
+  .personal-info-avatar-card {
+    width: 100% !important;
+    flex: none !important;
+  }
+}
