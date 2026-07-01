@@ -194,7 +194,7 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
           cursor: pointer;
           display: flex;
           align-items: center;
-          justifyContent: center;
+          justify-content: center;
           box-shadow: 0 1px 3px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.3) !important;
           transition: all 0.15s ease !important;
           margin: 0 !important;
