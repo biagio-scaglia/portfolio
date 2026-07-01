@@ -11,12 +11,14 @@ interface BootScreenProps {
 
 export default function BootScreen({ onComplete }: BootScreenProps) {
   const [bootStage, setBootStage] = useState<'cmd' | 'gui' | 'logon' | 'welcome'>('cmd')
-  const [cmdLinesCount, setCmdLinesCount] = useState(0)
+  const [renderedLines, setRenderedLines] = useState<string[]>([])
+  const [showPrompt, setShowPrompt] = useState(false)
   const [progress, setProgress] = useState(0)
-  const soundRef = useRef<Howl | null>(null)
   const [userName, setUserName] = useState('')
+  const soundRef = useRef<Howl | null>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
 
-  const cmdLines = [
+  const initialLines = [
     'Starting Portfolio OS Boot Loader...',
     'Copyright (C) 2026 Biagio Scaglia. All Rights Reserved.',
     '',
@@ -26,15 +28,38 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
     'Storage: SSD SATA3 512GB - HEALTHY (100%)',
     'GPU: NVIDIA GeForce GTX 760 - Aero Mode Supported',
     '',
-    'Loading virtual filesystem...',
-    '[  OK  ] Loading PORTFOLIO.SYS',
-    '[  OK  ] Starting WindowManager.exe',
-    '[  OK  ] Launching Explorer7.exe',
-    '[  OK  ] Initializing Audio Engine (Howler.js)',
-    '[  OK  ] Loading system libraries: React.js, Vite',
-    '[  OK  ] Mounting virtual directory C:\\Users\\biagio.scaglia',
+    'WARNING: The system was not shut down cleanly.',
+    'A disk integrity check of C: is recommended.',
     '',
-    'Boot sequence completed. Redirecting to Logon GUI...'
+    'Do you want to run disk scan (CHKDSK) now? [Y/N]:'
+  ]
+
+  const scanLines = [
+    '',
+    'Starting CHKDSK on C: (Virtual File System)...',
+    'Volume label is PORTFOLIO_OS.',
+    '',
+    'Stage 1: Examining basic file system structure...',
+    '  1280 file records processed.',
+    '  File verification completed.',
+    '',
+    'Stage 2: Examining file name linkage...',
+    '  1420 index entries processed.',
+    '  Index verification completed.',
+    '',
+    'Stage 3: Examining security descriptors...',
+    '  Security descriptor verification completed.',
+    '',
+    'CHKDSK discovered 0 bad sectors.',
+    'Windows has scanned the file system and found no problems.',
+    '',
+    'All scans passed. Redirecting to GUI Boot Loader...'
+  ]
+
+  const skipLines = [
+    '',
+    'Disk check skipped by user.',
+    'Redirecting to GUI Boot Loader...'
   ]
 
   // Inizializza l'audio con Howler
@@ -55,32 +80,85 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
     }
   }, [])
 
-  // Fase 1: Simulazione Stampa Righe CMD Terminale
+  // Auto-scroll del terminale alla stampa delle righe
+  useEffect(() => {
+    if (containerRef.current) {
+      containerRef.current.scrollTop = containerRef.current.scrollHeight
+    }
+  }, [renderedLines, showPrompt])
+
+  // Fase 1: Stampa sequenziale righe iniziali del CMD
   useEffect(() => {
     if (bootStage !== 'cmd') return
 
-    const lineInterval = setInterval(() => {
-      setCmdLinesCount((prev) => {
-        const next = prev + 1
-        if (next >= cmdLines.length) {
-          clearInterval(lineInterval)
-          setTimeout(() => {
-            setBootStage('gui')
-          }, 450)
-          return cmdLines.length
-        }
-        return next
-      })
-    }, 70) // stampa veloce riga per riga
+    let currentIdx = 0
+    const printInterval = setInterval(() => {
+      if (currentIdx < initialLines.length) {
+        setRenderedLines((prev) => [...prev, initialLines[currentIdx]])
+        currentIdx++
+      } else {
+        clearInterval(printInterval)
+        setShowPrompt(true)
+      }
+    }, 60)
 
-    return () => clearInterval(lineInterval)
-  }, [bootStage, cmdLines.length])
+    return () => clearInterval(printInterval)
+  }, [bootStage])
 
-  // Fase 2: Avanzamento barra di progresso GUI
+  // Gestione Input Scelta Utente (Y/N)
+  const handleChoice = (choice: 'Y' | 'N') => {
+    if (!showPrompt) return
+    setShowPrompt(false)
+
+    // Aggiunge la risposta sulla stessa riga del prompt
+    setRenderedLines((prev) => {
+      const copy = [...prev]
+      if (copy.length > 0) {
+        copy[copy.length - 1] = copy[copy.length - 1] + ' ' + choice
+      }
+      return copy
+    })
+
+    // Esegui sequenza in base alla scelta
+    const targetLines = choice === 'Y' ? scanLines : skipLines
+    let idx = 0
+
+    const nextPrintInterval = setInterval(() => {
+      if (idx < targetLines.length) {
+        setRenderedLines((prev) => [...prev, targetLines[idx]])
+        idx++
+      } else {
+        clearInterval(nextPrintInterval)
+        // Pausa prima di passare all'animazione della GUI
+        setTimeout(() => {
+          setBootStage('gui')
+        }, 750)
+      }
+    }, 50)
+  };
+
+  // Listeners tastiera per avvio CMD
+  useEffect(() => {
+    if (!showPrompt || bootStage !== 'cmd') return
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const key = e.key.toUpperCase()
+      if (key === 'Y' || key === 'S') { // Y o S (Sì)
+        handleChoice('Y')
+      } else if (key === 'N' || key === 'O') { // N o O (No)
+        handleChoice('N')
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [showPrompt, bootStage])
+
+  // Fase 2: Avanzamento barra di progresso GUI (Orb)
   useEffect(() => {
     if (bootStage !== 'gui') return
 
-    const duration = 2800 // 2.8 secondi per l'animazione dell'orb
+    const duration = 2800 // 2.8 secondi
     const interval = 50
     const increment = 100 / (duration / interval)
 
@@ -99,23 +177,21 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
     return () => clearInterval(progressInterval)
   }, [bootStage])
 
-  // Esegui l'accesso quando l'utente immette il nome
+  // Esegui l'accesso al desktop
   const handleLogin = () => {
     const finalName = userName.trim() || 'Ospite'
     setBootStage('welcome')
 
-    // Avvia l'audio del logon una sola volta
     if (soundRef.current) {
       try {
         soundRef.current.stop()
         soundRef.current.seek(0)
         soundRef.current.play()
       } catch (err) {
-        console.log('Errore riproduzione audio logon:', err)
+        console.log('Errore audio logon:', err)
       }
     }
 
-    // Carica il Desktop al termine della traccia (2.5 secondi)
     setTimeout(() => {
       onComplete(finalName)
     }, 2500)
@@ -136,7 +212,6 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
         userSelect: 'none'
       }}
     >
-      {/* Iniezione Stili CSS per Animazione Orb e Logon */}
       <style dangerouslySetInnerHTML={{__html: `
         @keyframes orb-rotate {
           0% { transform: rotate(0deg); }
@@ -210,26 +285,87 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
           border-color: #112d47 !important;
           box-shadow: inset 0 1px 3px rgba(0,0,0,0.5) !important;
         }
+
+        .cmd-terminal {
+          padding: 20px;
+          color: #ffffff;
+          font-size: 13px;
+          line-height: 1.6;
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          justifyContent: flex-start;
+          text-align: left;
+          box-sizing: border-box;
+          overflow-y: auto;
+        }
+
+        .chkdsk-btn {
+          border: 1px dashed rgba(255,255,255,0.4);
+          padding: 8px 16px;
+          cursor: pointer;
+          background: rgba(255, 255, 255, 0.08);
+          font-size: 12px;
+          font-family: monospace;
+          color: #fff;
+          transition: all 0.15s ease;
+          user-select: none;
+        }
+        .chkdsk-btn:hover {
+          background: rgba(255, 255, 255, 0.25);
+          border-color: #fff;
+        }
+
+        @media (max-width: 480px) {
+          .cmd-terminal {
+            padding: 12px;
+            font-size: 11px;
+          }
+          .chkdsk-btn {
+            padding: 10px 14px;
+            font-size: 11px;
+            width: 100%;
+            text-align: center;
+          }
+        }
       `}} />
 
       {/* STAGE 1: SIMULAZIONE TERMINALE CMD */}
       {bootStage === 'cmd' && (
-        <div style={{
-          padding: '20px',
-          color: '#ffffff',
-          fontSize: '13px',
-          lineHeight: '1.6',
-          height: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'flex-start',
-          textAlign: 'left'
-        }}>
-          {cmdLines.slice(0, cmdLinesCount).map((line, idx) => (
-            <div key={idx}>{line}</div>
+        <div ref={containerRef} className="cmd-terminal">
+          {renderedLines.map((line, idx) => (
+            <div key={idx} style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>{line}</div>
           ))}
-          {/* Cursore lampeggiante in basso */}
-          <div style={{ display: 'inline-block', width: '8px', height: '15px', background: '#fff', marginLeft: '2px', animation: 'orb-pulse 1s steps(2) infinite' }} />
+
+          {/* Pulsanti di scelta interattivi (Responsive e Mobile-friendly) */}
+          {showPrompt && (
+            <div style={{
+              marginTop: '15px',
+              display: 'flex',
+              gap: '12px',
+              flexDirection: 'row',
+              flexWrap: 'wrap',
+              width: '100%'
+            }}>
+              <div 
+                onClick={() => handleChoice('Y')}
+                className="chkdsk-btn"
+              >
+                &gt; Premi [ Y ] - Esegui CHKDSK (Consigliato)
+              </div>
+              <div 
+                onClick={() => handleChoice('N')}
+                className="chkdsk-btn"
+              >
+                &gt; Premi [ N ] - Salta Controllo
+              </div>
+            </div>
+          )}
+
+          {/* Cursore lampeggiante in basso (nascosto se c'è il prompt) */}
+          {!showPrompt && (
+            <div style={{ display: 'inline-block', width: '8px', height: '14px', background: '#fff', marginLeft: '2px', animation: 'orb-pulse 1s steps(2) infinite' }} />
+          )}
         </div>
       )}
 
@@ -244,7 +380,6 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
           gap: '40px',
           fontFamily: 'Segoe UI, Tahoma, sans-serif'
         }}>
-          {/* Orb animate di avvio di Windows 7 */}
           <div className="logo-pulse" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <div className="boot-orb-container">
               <div className="boot-orb orb-red" />
@@ -257,7 +392,6 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
             </div>
           </div>
 
-          {/* Barra di progresso */}
           <div style={{ width: '220px', height: '6px', background: '#222', borderRadius: '3px', overflow: 'hidden', border: '1px solid #444' }}>
             <div style={{
               width: `${progress}%`,
@@ -290,7 +424,6 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
             fontFamily: 'Segoe UI, Tahoma, sans-serif'
           }}
         >
-          {/* Glass Overlay per contrasto visivo */}
           <div style={{
             position: 'absolute',
             top: 0,
@@ -301,7 +434,6 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
             zIndex: 1
           }} />
 
-          {/* Logon Panel */}
           <div style={{
             position: 'relative',
             zIndex: 2,
@@ -311,7 +443,6 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
             width: '280px'
           }}>
             
-            {/* Foto Profilo Utente (Omino Generico di Windows) */}
             <div style={{
               width: '90px',
               height: '90px',
@@ -337,7 +468,6 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
               />
             </div>
 
-            {/* Nome utente / Stato di Welcome */}
             {bootStage === 'logon' ? (
               <>
                 <div style={{
@@ -350,7 +480,6 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
                   Biagio Scaglia
                 </div>
 
-                {/* Password Input Box (Simulata per il Nome Utente) */}
                 <div 
                   className="logon-input-wrapper"
                   style={{
@@ -389,7 +518,6 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
                     }}
                   />
                   
-                  {/* Pulsante circolare freccia blu login */}
                   <div
                     onClick={handleLogin}
                     className="blue-arrow-btn"
@@ -403,7 +531,6 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
                 </div>
               </>
             ) : (
-              /* Messaggio di Benvenuto in Logon */
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px' }}>
                 <div style={{
                   color: '#fff',
@@ -430,7 +557,6 @@ export default function BootScreen({ onComplete }: BootScreenProps) {
 
           </div>
 
-          {/* Footer Logon Screen */}
           <div style={{
             position: 'absolute',
             bottom: '35px',
