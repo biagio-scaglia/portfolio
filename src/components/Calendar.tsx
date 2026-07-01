@@ -162,268 +162,355 @@ export default function Calendar({ onClose, onMinimize, icon }: CalendarProps) {
     days.push(day)
   }
 
+  const isDesktop = windowWidth > 550
+
   return (
     <Window
       title="Calendario"
-      width={windowWidth <= 480 ? Math.min(350, window.innerWidth - 20) : windowWidth <= 768 ? Math.min(500, window.innerWidth - 40) : 600}
-      height={windowWidth <= 480 ? Math.min(450, window.innerHeight - 100) : windowWidth <= 768 ? Math.min(550, window.innerHeight - 80) : 550}
-      defaultPosition={{ x: windowWidth <= 480 ? 10 : windowWidth <= 768 ? 20 : 200, y: windowWidth <= 480 ? 10 : windowWidth <= 768 ? 20 : 100 }}
+      width={isDesktop ? 650 : Math.min(360, window.innerWidth - 10)}
+      height={isDesktop ? 480 : Math.min(560, window.innerHeight - 60)}
+      defaultPosition={{ x: isDesktop ? 180 : 10, y: isDesktop ? 80 : 10 }}
       onClose={onClose}
       onMinimize={onMinimize}
       icon={icon}
     >
-      <div style={{ 
-        padding: windowWidth <= 480 ? '10px' : '15px', 
-        display: 'flex', 
-        flexDirection: 'column',
+      <div style={{
+        padding: '15px',
+        display: 'flex',
+        flexDirection: isDesktop ? 'row' : 'column',
+        gap: '20px',
         height: '100%',
-        gap: '15px'
+        boxSizing: 'border-box',
+        overflowY: isDesktop ? 'hidden' : 'auto'
       }}>
-        {/* Header con navigazione */}
+        
+        {/* Pannello Sinistro: Calendario vero e proprio */}
         <div style={{
+          flex: 1,
           display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          paddingBottom: '10px',
-          borderBottom: '1px solid #ccc'
+          flexDirection: 'column',
+          gap: '10px'
         }}>
-          <button onClick={goToPreviousMonth} style={{ padding: '6px 12px' }}>
-            ←
-          </button>
-          <div style={{ textAlign: 'center' }}>
-            <h2 style={{ 
-              margin: 0, 
-              fontSize: windowWidth <= 480 ? '16px' : '18px'
-            }}>
+          {/* Header con navigazione mese */}
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            paddingBottom: '8px',
+            borderBottom: '1px solid #e2e8f0'
+          }}>
+            <button 
+              onClick={goToPreviousMonth} 
+              style={{
+                width: '28px',
+                height: '28px',
+                borderRadius: '50%',
+                background: '#fff',
+                border: '1px solid #cbd5e0',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+                transition: 'all 0.15s'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.background = '#edf2f7'}
+              onMouseLeave={(e) => e.currentTarget.style.background = '#fff'}
+            >
+              <i className="fas fa-chevron-left" style={{ fontSize: '11px', color: '#4a5568' }}></i>
+            </button>
+            
+            <h3 style={{ margin: 0, fontSize: '15px', color: '#2d3748', fontWeight: 'bold' }}>
               {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
-            </h2>
-          </div>
-          <button onClick={goToNextMonth} style={{ padding: '6px 12px' }}>
-            →
-          </button>
-        </div>
+            </h3>
 
-        {/* Pulsante Oggi */}
-        <button onClick={goToToday} style={{ alignSelf: 'center', padding: '6px 16px' }}>
-          Oggi
-        </button>
-
-        {/* Calendario */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-          {/* Nomi giorni */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(7, 1fr)',
-            gap: '4px',
-            marginBottom: '8px'
-          }}>
-            {dayNames.map((day) => (
-              <div
-                key={day}
-                style={{
-                  textAlign: 'center',
-                  fontWeight: 'bold',
-                  fontSize: windowWidth <= 480 ? '10px' : '11px',
-                  color: '#666',
-                  padding: '4px'
-                }}
-              >
-                {day}
-              </div>
-            ))}
+            <button 
+              onClick={goToNextMonth} 
+              style={{
+                width: '28px',
+                height: '28px',
+                borderRadius: '50%',
+                background: '#fff',
+                border: '1px solid #cbd5e0',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+                transition: 'all 0.15s'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.background = '#edf2f7'}
+              onMouseLeave={(e) => e.currentTarget.style.background = '#fff'}
+            >
+              <i className="fas fa-chevron-right" style={{ fontSize: '11px', color: '#4a5568' }}></i>
+            </button>
           </div>
 
-          {/* Griglia giorni */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(7, 1fr)',
-            gap: '4px',
-            flex: 1
-          }}>
-            {days.map((day, index) => {
-              const importantDate = day !== null ? getImportantDate(day!) : null
-              const hasImportantDate = importantDate !== null
-              
-              return (
-                <div
-                  key={index}
-                  onClick={() => day !== null && handleDateClick(day)}
-                  style={{
-                    aspectRatio: '1',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    background: day === null 
-                      ? 'transparent' 
-                      : isSelected(day!)
-                        ? '#4a90e2'
-                        : isToday(day!)
-                          ? '#e8f4f8'
-                          : hasImportantDate
-                            ? '#fff3cd'
-                            : '#f9f9f9',
-                    border: day !== null && isToday(day!)
-                      ? '2px solid #4a90e2'
-                      : day !== null && isSelected(day!)
-                        ? '2px solid #357abd'
-                        : day !== null && hasImportantDate
-                          ? `2px solid ${getTypeColor(importantDate!.type)}`
-                          : '1px solid #e0e0e0',
-                    borderRadius: '4px',
-                    cursor: day !== null ? 'pointer' : 'default',
-                    fontSize: windowWidth <= 480 ? '11px' : '13px',
-                    fontWeight: isToday(day!) || isSelected(day!) || hasImportantDate ? 'bold' : 'normal',
-                    color: day !== null && isSelected(day!)
-                      ? '#fff'
-                      : isToday(day!)
-                        ? '#4a90e2'
-                        : hasImportantDate
-                          ? getTypeColor(importantDate!.type)
-                          : '#333',
-                    transition: 'all 0.2s',
-                    position: 'relative',
-                    padding: '2px',
-                  }}
-                  onMouseEnter={(e) => {
-                    if (day !== null && !isSelected(day!) && !isToday(day!)) {
-                      e.currentTarget.style.background = hasImportantDate ? '#ffe69c' : '#f0f0f0'
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (day !== null && !isSelected(day!) && !isToday(day!)) {
-                      e.currentTarget.style.background = hasImportantDate ? '#fff3cd' : '#f9f9f9'
-                    }
-                  }}
-                >
-                  <div style={{ fontSize: windowWidth <= 480 ? '10px' : '12px' }}>
-                    {day}
-                  </div>
-                  {hasImportantDate && (
-                    <div style={{ 
-                      fontSize: windowWidth <= 480 ? '8px' : '10px',
-                      marginTop: '2px',
-                      lineHeight: '1'
-                    }}>
-                      {getTypeIcon(importantDate!.type)}
-                    </div>
-                  )}
-                </div>
-              )
-            })}
-          </div>
-        </div>
-
-        {/* Info data selezionata */}
-        {selectedDate && (() => {
-          const importantDate = importantDates.find(d => 
-            d.date.getDate() === selectedDate.getDate() &&
-            d.date.getMonth() === selectedDate.getMonth() &&
-            d.date.getFullYear() === selectedDate.getFullYear()
-          )
-          
-          return (
+          {/* Griglia Calendario */}
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+            {/* Nomi Giorni della Settimana */}
             <div style={{
-              padding: '12px',
-              background: importantDate ? '#f0f0f0' : '#f0f0f0',
-              borderRadius: '4px',
-              fontSize: windowWidth <= 480 ? '11px' : '12px',
+              display: 'grid',
+              gridTemplateColumns: 'repeat(7, 1fr)',
+              gap: '4px',
+              marginBottom: '6px'
             }}>
-              <div style={{ marginBottom: '8px', textAlign: 'center' }}>
-                <strong>Data selezionata:</strong> {selectedDate.toLocaleDateString('it-IT', { 
-                  weekday: 'long', 
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric' 
-                })}
-              </div>
-              {importantDate && (
-                <div style={{
-                  padding: '10px',
-                  background: '#fff',
-                  borderRadius: '4px',
-                  borderLeft: `4px solid ${getTypeColor(importantDate.type)}`,
-                  marginTop: '8px'
-                }}>
-                  <div style={{ 
-                    display: 'flex', 
-                    alignItems: 'center', 
-                    gap: '8px',
-                    marginBottom: '6px',
-                    fontSize: windowWidth <= 480 ? '12px' : '13px',
-                    fontWeight: 'bold',
-                    color: getTypeColor(importantDate.type)
-                  }}>
-                    <span>{getTypeIcon(importantDate.type)}</span>
-                    <span>{importantDate.title}</span>
-                  </div>
-                  <div style={{ 
-                    fontSize: windowWidth <= 480 ? '10px' : '11px',
-                    color: '#666',
-                    paddingLeft: '24px'
-                  }}>
-                    {importantDate.description}
-                  </div>
-                </div>
-              )}
-            </div>
-          )
-        })()}
-
-        {/* Lista eventi del mese */}
-        {getImportantDatesForMonth().length > 0 && (
-          <div style={{
-            padding: '12px',
-            background: '#f9f9f9',
-            borderRadius: '4px',
-            border: '1px solid #e0e0e0',
-            maxHeight: '150px',
-            overflowY: 'auto'
-          }}>
-            <div style={{ 
-              fontWeight: 'bold', 
-              marginBottom: '8px',
-              fontSize: windowWidth <= 480 ? '11px' : '12px'
-            }}>
-              Eventi di {monthNames[currentDate.getMonth()]}:
-            </div>
-            {getImportantDatesForMonth()
-              .sort((a, b) => a.date.getDate() - b.date.getDate())
-              .map((event, index) => (
-                <div 
-                  key={index}
-                  onClick={() => {
-                    setCurrentDate(new Date(event.date.getFullYear(), event.date.getMonth(), 1))
-                    setSelectedDate(event.date)
-                  }}
+              {dayNames.map((day) => (
+                <div
+                  key={day}
                   style={{
-                    padding: '6px 8px',
-                    marginBottom: '4px',
-                    background: '#fff',
-                    borderRadius: '3px',
-                    borderLeft: `3px solid ${getTypeColor(event.type)}`,
-                    cursor: 'pointer',
-                    fontSize: windowWidth <= 480 ? '10px' : '11px',
-                    transition: 'all 0.2s'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = '#f0f0f0'
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = '#fff'
+                    textAlign: 'center',
+                    fontWeight: 'bold',
+                    fontSize: '11px',
+                    color: '#718096',
+                    padding: '4px 0'
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <span>{getTypeIcon(event.type)}</span>
-                    <span style={{ fontWeight: 'bold' }}>
-                      {event.date.getDate()} {monthNames[event.date.getMonth()]}:
-                    </span>
-                    <span>{event.title}</span>
-                  </div>
+                  {day}
                 </div>
               ))}
+            </div>
+
+            {/* Griglia dei Giorni */}
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(7, 1fr)',
+              gap: '6px',
+              flex: 1
+            }}>
+              {days.map((day, index) => {
+                if (day === null) {
+                  return <div key={`empty-${index}`} style={{ aspectRatio: '1' }} />
+                }
+
+                const importantDate = getImportantDate(day)
+                const isSelectedDay = isSelected(day)
+                const isTodayDay = isToday(day)
+
+                // Stile specifico per i tipi di evento
+                const eventBorderColor = importantDate ? getTypeColor(importantDate.type) : 'transparent'
+
+                return (
+                  <div
+                    key={`day-${day}`}
+                    onClick={() => handleDateClick(day)}
+                    style={{
+                      aspectRatio: '1',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      fontSize: '12px',
+                      fontWeight: isTodayDay || isSelectedDay || importantDate ? 'bold' : 'normal',
+                      transition: 'all 0.15s ease',
+                      position: 'relative',
+                      boxSizing: 'border-box',
+                      
+                      // Highlight sfondi
+                      background: isSelectedDay
+                        ? 'linear-gradient(to bottom, #e1f0fa 0%, #a2caf0 100%)' // Aero selection
+                        : isTodayDay
+                          ? '#fffae6' // Light gold highlight
+                          : '#fff',
+                          
+                      // Bordi
+                      border: isSelectedDay
+                        ? '1px solid #7b9fc5'
+                        : isTodayDay
+                          ? '2px solid #d69e2e' // Gold outline per today
+                          : importantDate
+                            ? `1.5px dashed ${eventBorderColor}`
+                            : '1px solid #e2e8f0',
+                            
+                      // Testo colori
+                      color: isSelectedDay
+                        ? '#002f5d'
+                        : isTodayDay
+                          ? '#b7791f'
+                          : '#2d3748',
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isSelectedDay) {
+                        e.currentTarget.style.background = '#edf2f7'
+                        e.currentTarget.style.borderColor = '#cbd5e0'
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isSelectedDay) {
+                        e.currentTarget.style.background = isTodayDay ? '#fffae6' : '#fff'
+                        e.currentTarget.style.borderColor = isTodayDay ? '#d69e2e' : importantDate ? eventBorderColor : '#e2e8f0'
+                      }
+                    }}
+                  >
+                    <span>{day}</span>
+                    
+                    {/* Pallino indicatore sotto il numero */}
+                    {importantDate && (
+                      <span style={{
+                        position: 'absolute',
+                        bottom: '4px',
+                        width: '5px',
+                        height: '5px',
+                        borderRadius: '50%',
+                        background: eventBorderColor
+                      }} />
+                    )}
+                  </div>
+                )
+              })}
+            </div>
           </div>
-        )}
+
+          {/* Bottone per tornare ad oggi */}
+          <button 
+            onClick={goToToday} 
+            style={{
+              padding: '6px 15px',
+              alignSelf: 'flex-start',
+              background: '#fff',
+              border: '1px solid #cbd5e0',
+              borderRadius: '4px',
+              fontSize: '11px',
+              fontWeight: '600',
+              color: '#4a5568',
+              cursor: 'pointer',
+              boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+              transition: 'all 0.15s'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.background = '#edf2f7'}
+            onMouseLeave={(e) => e.currentTarget.style.background = '#fff'}
+          >
+            <i className="fas fa-calendar-day" style={{ marginRight: '5px' }}></i> Oggi
+          </button>
+        </div>
+
+        {/* Pannello Destro: Sidebar dei Dettagli */}
+        <div style={{
+          width: isDesktop ? '230px' : '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '15px',
+          overflowY: 'auto',
+          borderLeft: isDesktop ? '1px solid #e2e8f0' : 'none',
+          paddingLeft: isDesktop ? '15px' : '0',
+          paddingTop: isDesktop ? '0' : '15px',
+          borderTop: isDesktop ? 'none' : '1px solid #e2e8f0',
+          flexShrink: 0
+        }}>
+          {/* Box data selezionata */}
+          {selectedDate && (() => {
+            const importantDate = importantDates.find(d => 
+              d.date.getDate() === selectedDate.getDate() &&
+              d.date.getMonth() === selectedDate.getMonth() &&
+              d.date.getFullYear() === selectedDate.getFullYear()
+            )
+            
+            return (
+              <div style={{
+                background: '#f7fafc',
+                border: '1px solid #e2e8f0',
+                borderRadius: '6px',
+                padding: '10px',
+                fontSize: '12px'
+              }}>
+                <div style={{ fontWeight: 'bold', color: '#4a5568', marginBottom: '6px', borderBottom: '1px solid #edf2f7', paddingBottom: '4px' }}>
+                  <i className="far fa-clock" style={{ marginRight: '5px' }}></i> Dettagli Giorno
+                </div>
+                <div style={{ fontSize: '11px', color: '#718096', marginBottom: '8px' }}>
+                  {selectedDate.toLocaleDateString('it-IT', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                  })}
+                </div>
+
+                {importantDate ? (
+                  <div style={{
+                    padding: '8px',
+                    background: '#fff',
+                    borderRadius: '4px',
+                    borderLeft: `4px solid ${getTypeColor(importantDate.type)}`,
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.02)'
+                  }}>
+                    <div style={{ 
+                      fontWeight: 'bold', 
+                      color: getTypeColor(importantDate.type),
+                      marginBottom: '4px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '5px'
+                    }}>
+                      <span>{getTypeIcon(importantDate.type)}</span>
+                      <span>{importantDate.title}</span>
+                    </div>
+                    <div style={{ fontSize: '11px', color: '#4a5568', lineHeight: '1.4' }}>
+                      {importantDate.description}
+                    </div>
+                  </div>
+                ) : (
+                  <div style={{ color: '#a0aec0', fontSize: '11px', fontStyle: 'italic', textAlign: 'center', padding: '10px 0' }}>
+                    Nessun evento pianificato
+                  </div>
+                )}
+              </div>
+            )
+          })()}
+
+          {/* Eventi del Mese */}
+          <div>
+            <div style={{ fontSize: '11px', fontWeight: 'bold', color: '#718096', marginBottom: '8px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+              Eventi del Mese
+            </div>
+            {getImportantDatesForMonth().length > 0 ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '180px', overflowY: 'auto' }}>
+                {getImportantDatesForMonth()
+                  .sort((a, b) => a.date.getDate() - b.date.getDate())
+                  .map((event, index) => (
+                    <div 
+                      key={index}
+                      onClick={() => {
+                        setCurrentDate(new Date(event.date.getFullYear(), event.date.getMonth(), 1))
+                        setSelectedDate(event.date)
+                      }}
+                      style={{
+                        padding: '6px 8px',
+                        background: '#fff',
+                        border: '1px solid #e2e8f0',
+                        borderLeft: `3px solid ${getTypeColor(event.type)}`,
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontSize: '11px',
+                        transition: 'all 0.15s'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = '#f7fafc'
+                        e.currentTarget.style.borderColor = '#cbd5e0'
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = '#fff'
+                        e.currentTarget.style.borderColor = '#e2e8f0'
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <span style={{ fontWeight: 'bold', color: '#4a5568' }}>{event.date.getDate()}:</span>
+                        <span style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', flex: 1 }}>
+                          {event.title}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            ) : (
+              <div style={{ color: '#a0aec0', fontSize: '11px', fontStyle: 'italic', textAlign: 'center', padding: '15px 0', border: '1px dashed #e2e8f0', borderRadius: '6px' }}>
+                Nessun evento questo mese
+              </div>
+            )}
+          </div>
+        </div>
+
       </div>
     </Window>
   )

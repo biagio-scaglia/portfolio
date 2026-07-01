@@ -163,39 +163,46 @@ export default function ImagesWindow({
       onMinimize={onMinimize}
       icon={icon}
     >
-      <div style={{ padding: windowWidth <= 480 ? '15px' : '20px' }}>
-        <h2 style={{ marginTop: 0, fontSize: windowWidth <= 480 ? '16px' : '18px', marginBottom: windowWidth <= 480 ? '15px' : '20px' }}>Scegli uno sfondo</h2>
+      <div style={{ padding: windowWidth <= 480 ? '15px' : '20px', fontFamily: 'Segoe UI, Tahoma, sans-serif' }}>
+        <h2 style={{ marginTop: 0, fontSize: windowWidth <= 480 ? '15px' : '16px', color: '#2b6cb0', borderBottom: '1px solid #edf2f7', paddingBottom: '6px', marginBottom: '15px' }}>
+          <i className="fas fa-desktop" style={{ marginRight: '6px' }}></i> Sfondo del Desktop
+        </h2>
         
+        {/* Griglia Anteprime Sfondo */}
         <div style={{ 
           display: 'grid', 
           gridTemplateColumns: windowWidth <= 480 
             ? 'repeat(2, 1fr)' 
             : windowWidth <= 768 
               ? 'repeat(3, 1fr)' 
-              : 'repeat(auto-fill, minmax(150px, 1fr))', 
-          gap: windowWidth <= 480 ? '10px' : '16px', 
-          marginBottom: windowWidth <= 480 ? '15px' : '20px' 
+              : 'repeat(auto-fill, minmax(140px, 1fr))', 
+          gap: '12px', 
+          marginBottom: '20px',
+          maxHeight: '220px',
+          overflowY: 'auto',
+          padding: '4px'
         }}>
           {loadedBackgrounds.map((bg, index) => (
             <div
               key={index}
               onClick={() => setSelectedBackground(index)}
               style={{
-                aspectRatio: '4/3',
-                background: bg.type === 'image' && !bg.url.startsWith('linear-gradient') ? `url(${bg.url})` : bg.url.startsWith('linear-gradient') ? bg.url : '#000',
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                border: selectedBackground === index ? '3px solid #0078d4' : '2px solid #c0c0c0',
+                aspectRatio: '16/10',
+                background: '#1a202c', // Dark monitor frame background
+                border: selectedBackground === index ? '3px solid #3182ce' : '1px solid #cbd5e0',
+                borderRadius: '6px',
                 cursor: 'pointer',
                 position: 'relative',
-                transition: 'all 0.2s',
+                transition: 'all 0.15s ease',
                 overflow: 'hidden',
+                boxShadow: selectedBackground === index 
+                  ? '0 0 0 1px #3182ce, 0 4px 6px rgba(49, 130, 206, 0.2)' 
+                  : '0 2px 4px rgba(0,0,0,0.05)'
               }}
               onMouseEnter={(e) => {
                 if (selectedBackground !== index) {
-                  e.currentTarget.style.borderColor = '#0078d4'
+                  e.currentTarget.style.borderColor = '#3182ce'
                 }
-                // Avvia la preview del video quando si passa sopra
                 if (bg.type === 'video' && videoRefs.current[index]) {
                   const video = videoRefs.current[index]
                   if (video) {
@@ -206,9 +213,8 @@ export default function ImagesWindow({
               }}
               onMouseLeave={(e) => {
                 if (selectedBackground !== index) {
-                  e.currentTarget.style.borderColor = '#c0c0c0'
+                  e.currentTarget.style.borderColor = '#cbd5e0'
                 }
-                // Ferma la preview del video quando si esce
                 if (bg.type === 'video' && videoRefs.current[index]) {
                   const video = videoRefs.current[index]
                   if (video) {
@@ -230,18 +236,8 @@ export default function ImagesWindow({
                   style={{
                     width: '100%',
                     height: '100%',
-                    objectFit: 'cover',
+                    objectFit: 'contain', // No cropping for video preview
                     display: 'block',
-                  }}
-                  onMouseEnter={(e) => {
-                    const video = e.currentTarget
-                    video.currentTime = 0
-                    video.play().catch(() => {})
-                  }}
-                  onMouseLeave={(e) => {
-                    const video = e.currentTarget
-                    video.pause()
-                    video.currentTime = 0
                   }}
                 />
               ) : (
@@ -254,7 +250,7 @@ export default function ImagesWindow({
                       transform: 'translate(-50%, -50%)',
                       zIndex: 1,
                     }}>
-                      <Windows7Spinner size={32} />
+                      <Windows7Spinner size={20} />
                     </div>
                   )}
                   <img
@@ -264,7 +260,7 @@ export default function ImagesWindow({
                     style={{
                       width: '100%',
                       height: '100%',
-                      objectFit: 'cover',
+                      objectFit: 'contain', // No cropping for image preview
                       display: bg.url.startsWith('linear-gradient') ? 'none' : (loadingImages[bg.url] ? 'none' : 'block'),
                     }}
                     onLoadStart={() => {
@@ -285,107 +281,136 @@ export default function ImagesWindow({
                   />
                 </>
               )}
+              
+              {/* Overlay Name */}
               <div style={{
                 position: 'absolute',
                 bottom: 0,
                 left: 0,
                 right: 0,
-                background: 'rgba(0, 0, 0, 0.6)',
+                background: 'rgba(0, 0, 0, 0.65)',
                 color: '#fff',
-                padding: windowWidth <= 480 ? '4px' : '6px',
-                fontSize: windowWidth <= 480 ? '10px' : '11px',
+                padding: '4px 6px',
+                fontSize: '9px',
                 textAlign: 'center',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: '6px',
+                gap: '4px',
+                whiteSpace: 'nowrap',
+                textOverflow: 'ellipsis',
+                overflow: 'hidden'
               }}>
                 {bg.type === 'video' && (
-                  <i className="fas fa-video" style={{ fontSize: windowWidth <= 480 ? '9px' : '10px' }}></i>
+                  <i className="fas fa-video" style={{ fontSize: '8px', color: '#63b3ed' }}></i>
                 )}
-                <span>{bg.name}</span>
+                <span>{bg.name.replace('Sfondo ', '')}</span>
               </div>
+
+              {/* Checkmark badge */}
               {selectedBackground === index && (
                 <div style={{
                   position: 'absolute',
-                  top: windowWidth <= 480 ? '6px' : '8px',
-                  right: windowWidth <= 480 ? '6px' : '8px',
-                  background: '#0078d4',
+                  top: '5px',
+                  right: '5px',
+                  background: '#3182ce',
                   borderRadius: '50%',
-                  width: windowWidth <= 480 ? '20px' : '24px',
-                  height: windowWidth <= 480 ? '20px' : '24px',
+                  width: '16px',
+                  height: '16px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   color: '#fff',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
                 }}>
-                  <i className="fas fa-check" style={{ fontSize: windowWidth <= 480 ? '10px' : '12px' }}></i>
+                  <i className="fas fa-check" style={{ fontSize: '8px' }}></i>
                 </div>
               )}
             </div>
           ))}
         </div>
 
-        {/* Slideshow Settings */}
+        {/* Slideshow Settings Box */}
         <div style={{ 
-          marginBottom: windowWidth <= 480 ? '15px' : '20px',
-          padding: windowWidth <= 480 ? '12px' : '16px',
-          background: '#f5f5f5',
-          borderRadius: '4px',
-          border: '1px solid #ddd'
+          marginBottom: '20px',
+          padding: '12px 15px',
+          background: '#f7fafc',
+          borderRadius: '8px',
+          border: '1px solid #e2e8f0'
         }}>
-          <h3 style={{ marginTop: 0, marginBottom: windowWidth <= 480 ? '12px' : '16px', fontSize: windowWidth <= 480 ? '14px' : '16px' }}>
-            Slideshow Sfondi
+          <h3 style={{ marginTop: 0, marginBottom: '10px', fontSize: '13px', color: '#4a5568', fontWeight: 'bold' }}>
+            <i className="fas fa-images" style={{ marginRight: '6px', color: '#4299e1' }}></i> Slideshow Automatico
           </h3>
           
-          <div style={{ marginBottom: windowWidth <= 480 ? '10px' : '12px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <input
               type="checkbox"
               id="slideshow-enabled"
               checked={localSlideshowEnabled}
               onChange={(e) => setLocalSlideshowEnabled(e.target.checked)}
-              style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+              style={{ width: '16px', height: '16px', cursor: 'pointer' }}
             />
-            <label htmlFor="slideshow-enabled" style={{ fontSize: windowWidth <= 480 ? '12px' : '13px', cursor: 'pointer' }}>
-              Attiva slideshow automatico
+            <label htmlFor="slideshow-enabled" style={{ fontSize: '12px', color: '#2d3748', cursor: 'pointer', fontWeight: '600' }}>
+              Cambia sfondo automaticamente
             </label>
           </div>
 
           {localSlideshowEnabled && (
-            <div style={{ marginTop: windowWidth <= 480 ? '10px' : '12px' }}>
+            <div style={{ marginTop: '12px', borderTop: '1px solid #edf2f7', paddingTop: '10px' }}>
               <label htmlFor="slideshow-seconds" style={{ 
                 display: 'block', 
                 marginBottom: '6px', 
-                fontSize: windowWidth <= 480 ? '12px' : '13px' 
+                fontSize: '11px',
+                color: '#718096'
               }}>
-                Secondi tra le immagini: {localSlideshowSeconds}
+                Frequenza di aggiornamento: <strong>{localSlideshowSeconds} secondi</strong>
               </label>
-              <input
-                type="range"
-                id="slideshow-seconds"
-                min="2"
-                max="30"
-                value={localSlideshowSeconds}
-                onChange={(e) => setLocalSlideshowSeconds(parseInt(e.target.value))}
-                style={{ width: '100%', cursor: 'pointer' }}
-              />
-              <div style={{ 
-                display: 'flex', 
-                justifyContent: 'space-between', 
-                fontSize: windowWidth <= 480 ? '10px' : '11px',
-                color: '#666',
-                marginTop: '4px'
-              }}>
-                <span>2s</span>
-                <span>30s</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <span style={{ fontSize: '10px', color: '#a0aec0' }}>2s</span>
+                <input
+                  type="range"
+                  id="slideshow-seconds"
+                  min="2"
+                  max="30"
+                  value={localSlideshowSeconds}
+                  onChange={(e) => setLocalSlideshowSeconds(parseInt(e.target.value))}
+                  style={{ flex: 1, cursor: 'pointer' }}
+                />
+                <span style={{ fontSize: '10px', color: '#a0aec0' }}>30s</span>
               </div>
             </div>
           )}
         </div>
 
-        <div style={{ display: 'flex', gap: windowWidth <= 480 ? '8px' : '12px', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
-          <button onClick={onClose} style={{ fontSize: windowWidth <= 480 ? '12px' : '14px', padding: windowWidth <= 480 ? '8px 16px' : '10px 20px' }}>Annulla</button>
-          <button onClick={handleApply} style={{ fontSize: windowWidth <= 480 ? '12px' : '14px', padding: windowWidth <= 480 ? '8px 16px' : '10px 20px' }}>Applica</button>
+        {/* Pulsanti Azione */}
+        <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
+          <button onClick={onClose} style={{
+            padding: '6px 16px',
+            background: '#fff',
+            border: '1px solid #cbd5e0',
+            borderRadius: '4px',
+            fontSize: '12px',
+            fontWeight: '600',
+            color: '#4a5568',
+            cursor: 'pointer',
+            transition: 'all 0.15s'
+          }} onMouseEnter={(e) => e.currentTarget.style.background = '#edf2f7'} onMouseLeave={(e) => e.currentTarget.style.background = '#fff'}>
+            Annulla
+          </button>
+          
+          <button onClick={handleApply} style={{
+            padding: '6px 18px',
+            background: '#3182ce',
+            border: '1px solid #3182ce',
+            borderRadius: '4px',
+            fontSize: '12px',
+            fontWeight: 'bold',
+            color: '#fff',
+            cursor: 'pointer',
+            transition: 'all 0.15s'
+          }} onMouseEnter={(e) => e.currentTarget.style.background = '#2b6cb0'} onMouseLeave={(e) => e.currentTarget.style.background = '#3182ce'}>
+            Applica
+          </button>
         </div>
       </div>
     </Window>
